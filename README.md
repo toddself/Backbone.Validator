@@ -13,6 +13,7 @@ By default, `use_defaults` is set to `false`.  When you're creating your model, 
 ## Defining Validators
 Validators are defined in the `validator` object as part of the model setup.  If the value passed in doesn't meet your criteria for a valid value, return any value.  If it does match your criteria, return nothing (`undefined`).  You may attach multiple validators to each attribute -- they will be run in the order in which they are attached.  If one of them fails, the entire validation will fail and `error` will be triggered.
 
+
    var TestModel = Backbone.Model.extend({
        validators: {
            title: {
@@ -32,6 +33,8 @@ Validators are defined in the `validator` object as part of the model setup.  If
    test_model.set({title: false});
    test_model.get('title');
    "I am a title!"
+   
+   
    
 ## Catching errors
 You can catch errors and do something with them by attaching a listener to the `error` event which is triggered when the validation fails.
