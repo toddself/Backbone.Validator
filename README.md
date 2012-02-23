@@ -105,7 +105,9 @@ t.get('title');
 "this is a new title"
 ```
 
-### Pre-Defined Validators
+### Extending the pre-defined validators
+
+### List of pre-defined validators
 
 ```javascript
 range: function(value, range){
