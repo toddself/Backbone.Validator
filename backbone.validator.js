@@ -22,7 +22,7 @@ Backbone.Validator = (function(){
             }
             
         });
-        return validators
+        return validators;
     };
     
     var run_validators = function(value, validators){
@@ -72,8 +72,51 @@ Backbone.Validator = (function(){
 
 Backbone.Validator.testers = (function(){
     return {
-        test: function(value, opt){
-            console.log(value, opt);
+        range: function(value, range){
+            if(_.isArray(range) && range.length === 2){
+                if((value < range[0]) || (value > range[1])){
+                    return value+" is not within the range "+range[0]+" "+range[1];
+                }
+            }
+        },
+        
+        is_type: function(value, type){
+            if(typeof(value) !== type){
+                return "Expected "+value+" to be of type "+type;
+            }
+        },
+        
+        regex: function(value, re){
+            if(_.isRegExp(re)){
+                if(!re.test(value)){
+                    return value+" did not match pattern "+re.toString();
+                }
+            }
+        },
+        
+        in_list: function(value, list){
+            if(_.isArray(list) && list.indexOf(value) === -1){
+                return value+" is not part of ["+list.join(', ')+"]";
+            }
+        },
+        
+        is_key: function(value, obj){
+            if(_.isObject(obj) && !(value in obj)){
+                return value+" is not one of ["+_(obj).keys().join(', ')+"]";
+            }
+        },
+        
+        max_length: function(value, length){
+            if(!_.isUndefined(value.length) && (value.length > length)){
+                return "attribute value is longer than "+length;
+            }
+        },
+        
+        min_length: function(value, length){
+            if(!_.isUndefined(value.length) && (value.length < length)){
+                return value+'is shorter than '+length;
+            }
         }
+        
     };
 }());
