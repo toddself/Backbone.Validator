@@ -50,7 +50,7 @@ Backbone.Validator = (function(){
             var defaults = {silent: true};
             defaults[attr] = model.defaults[attr];
             model.set(defaults);
-            return errors;
+            model.trigger('error', model, errors)
         }        
     };
     
@@ -71,6 +71,7 @@ Backbone.Validator = (function(){
         use_defaults: false,
         
         validate: function(attrs) {
+            // this.on('validator:use_defaults', set_default);
             var errors;
             var model = this;
             var changedAttributes = get_changed_attributes(model.previousAttributes(), attrs);
@@ -82,7 +83,9 @@ Backbone.Validator = (function(){
                         errors = run_validators(attrs[attr], model_validators, attr);
                         if(errors.length > 0){  
                             if(model.use_defaults || attrs.use_defaults){
+                                // _.defer(model.trigger('validator:user_defaults', model, attr, errors));
                                 set_default(model, attr, errors);
+                                return errors;
                             }
                             return errors;                
                         }
