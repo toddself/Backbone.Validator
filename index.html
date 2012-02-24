@@ -8,9 +8,14 @@
 
 <h1>Backbone.Validator</h1>
 
-<h2>Known Issues</h2>
+<h2>Versions</h2>
 
-<p><code>is_url</code>causes a <code>RangeError: Maximum call stack size exceeded</code> when it's enabled.  Avoid using this tester for now!</p>
+<ul>
+<li>0.4.0 - Fixed many recursion bugs, <code>error</code> fires correctly even when <code>use_defaults</code> is <code>true</code>.  Passes 17 test cases so far.</li>
+<li>0.3.0 - Added <code>format</code>, removed <code>is_url</code> validator (not useful)</li>
+<li>0.2.5 - Pre-Defined validators</li>
+<li>0.2.0 - Initial release</li>
+</ul>
 
 <h2>Backbone Version</h2>
 
@@ -132,6 +137,8 @@ t.get('title');
 });
 </code></pre>
 
+<p><code>is_type</code> allows for checking of <code>date</code> objects now.</p>
+
 <h3>List of pre-defined validators</h3>
 
 <pre><code>range: function(value, range, attribute){
@@ -143,9 +150,18 @@ t.get('title');
 },
 
 is_type: function(value, type, attribute){
-    if(typeof(value) !== type){
-        return format("Expected {0} to be of type {1} for {2} ", value, type, attribute);
-    }
+    // if type is date we'll do something different.
+    // also, https://github.com/documentcloud/underscore/pull/489 means we're not going to use _.isDate
+    if(type === 'date'){
+        if(_.isNaN(value.valueOf()) || toString.call(value) != '[object Date]'){
+            return format("Expected {0} to be a valid date for {1}", value, attribute);
+        }
+    } else {
+        if(typeof(value) !== type){
+            return format("Expected {0} to be of type {1} for {2} ", value, type, attribute);
+        }
+
+    }            
 },
 
 regex: function(value, re, attribute){
@@ -184,51 +200,7 @@ to_equal: function(value, example, attribute){
     if(value !== example){
         return format("{0} is not the same as {1} for {2}", value, example, attribute);
     }
-},
-
-is_url: function(value, matchers, attribute){
-    // this is tricky since ICANN is going to let anything be a TLD.
-    // which means we could have a doman name of 129.122.com or hostname.12
-    // so we are not going to even bother with checking the validity of
-    // the host other than allowing a restricted list of TLDs to match
-    // against, as well as a restricted list of protocols and ports.
-    // Anything more specific should be registered as either a custom
-    // validator function or a regex to be passed to the regex tester     
-    //
-    // matchers is an object with the following pattern:
-    // matchers = {
-    //     protocols = ['https', 'http', 'ftp'],
-    //     ports = [80, 8080, 23, 443],
-    //     tlds = ['.com', '.co.uk']
-    // }
-    //
-    // Setting any of the parameters to "all" will allow ALL values bascially
-    // not performing validation on that part of the value.  Should all of
-    // these values be set to 'all' no validation will actually be performed.               
-
-    var url = document.createElement('a');
-    url.href = value;
-
-    var allowed_protocols = _.isNull(matchers) ? default_protocols : matchers.protocols;
-    var allowed_ports = _.isNull(matchers) ? default_ports : matchers.ports;
-    var allowed_tlds = _.isNull(matchers) ? default_tlds : matchers.tlds;
-
-    if(allowed_protocols !== 'all' &amp;&amp; allowed_protocols.indexOf(url.protocol) === -1){
-        return format("{0} is not in the list of allowed protocols for {1}", url.protocol, attribute);
-    }
-    if(allowed_ports !== 'all' &amp;&amp; allowed_ports.indexOf(url.port) === -1){
-        return format("{0} is not in the list of allowed ports for {1}", url.port, attribute);
-    }
-    if(allowed_tlds !== 'all' &amp;&amp; allowed_tlds.indexOf(url.host) === -1){
-        return format("{0} is not in the list of valid top-level domains for ", url.host, attribute);
-    }
 }
-</code></pre>
-
-<h3>Predefined values for testers</h3>
-
-<pre><code>var default_protocols = ['http', 'https'];
-var default_ports = [80, 443];
 </code></pre>
 
 <h2>Inspiration</h2>
@@ -237,7 +209,7 @@ var default_ports = [80, 443];
 
 <h2>License</h2>
 
-<p>Copyright (C) 2012 <a href="http://broadcastr.com">Broadcastr</a></p>
+<p>Backbone.Validator is copyright (c) 2012 <a href="http://broadcastr.com">Broadcastr</a>.</p>
 
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
 

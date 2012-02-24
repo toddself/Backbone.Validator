@@ -7,9 +7,10 @@
 # Backbone.Validator
 
 ## Versions
-0.2.0 - Initial release
-0.2.5 - Pre-Defined validators
-0.3.0 - Added `format`, removed `is_url` validator (not useful)
+* 0.4.0 - Fixed many recursion bugs, `error` fires correctly even when `use_defaults` is `true`.  Passes 17 test cases so far.
+* 0.3.0 - Added `format`, removed `is_url` validator (not useful)
+* 0.2.5 - Pre-Defined validators
+* 0.2.0 - Initial release
 
 ## Backbone Version
 This plug-in is only tested with Backbone 0.9.1.  You'll also need to make sure you're on Underscore 1.3.1.  Not that it won't work with older versions, but there's no guarantees.
@@ -125,6 +126,7 @@ The pre-defined validators list may be added to by extending the Backbone.Valida
         }
     });
 
+`is_type` allows for checking of `date` objects now.
 
 ### List of pre-defined validators
 
@@ -138,9 +140,18 @@ The pre-defined validators list may be added to by extending the Backbone.Valida
     },
 
     is_type: function(value, type, attribute){
-        if(typeof(value) !== type){
-            return format("Expected {0} to be of type {1} for {2} ", value, type, attribute);
-        }
+        // if type is date we'll do something different.
+        // also, https://github.com/documentcloud/underscore/pull/489 means we're not going to use _.isDate
+        if(type === 'date'){
+            if(_.isNaN(value.valueOf()) || toString.call(value) != '[object Date]'){
+                return format("Expected {0} to be a valid date for {1}", value, attribute);
+            }
+        } else {
+            if(typeof(value) !== type){
+                return format("Expected {0} to be of type {1} for {2} ", value, type, attribute);
+            }
+            
+        }            
     },
 
     regex: function(value, re, attribute){
