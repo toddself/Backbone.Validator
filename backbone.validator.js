@@ -1,4 +1,4 @@
-// Backbone.Validator v0.2.5
+// Backbone.Validator v0.3.0
 //
 // Copyright (C) 2012 Broadcastr
 // Author: Todd Kennedy <todd@broadcastr.com>
@@ -81,9 +81,7 @@ Backbone.Validator = (function(){
 }());
 
 Backbone.Validator.testers = (function(){
-    var default_protocols = ['http', 'https'];
-    var default_ports = [80];
-    var default_tlds = 'all';
+
     // borrowed from https://github.com/thedersen/backbone.validation
     var format = function() {
         var args = Array.prototype.slice.call(arguments);
@@ -143,44 +141,6 @@ Backbone.Validator.testers = (function(){
         to_equal: function(value, example, attribute){
             if(value !== example){
                 return format("{0} is not the same as {1} for {2}", value, example, attribute);
-            }
-        },
-
-        is_url: function(value, matchers, attribute){
-            // this is tricky since ICANN is going to let anything be a TLD.
-            // which means we could have a doman name of 129.122.com or hostname.12
-            // so we are not going to even bother with checking the validity of
-            // the host other than allowing a restricted list of TLDs to match
-            // against, as well as a restricted list of protocols and ports.
-            // Anything more specific should be registered as either a custom
-            // validator function or a regex to be passed to the regex tester     
-            //
-            // matchers is an object with the following pattern:
-            // matchers = {
-            //     protocols = ['https', 'http', 'ftp'],
-            //     ports = [80, 8080, 23, 443],
-            //     tlds = ['.com', '.co.uk']
-            // }
-            //
-            // Setting any of the parameters to "all" will allow ALL values bascially
-            // not performing validation on that part of the value.  Should all of
-            // these values be set to 'all' no validation will actually be performed.               
-            
-            var url = document.createElement('a');
-            url.href = value;
-            
-            var allowed_protocols = _.isNull(matchers) ? default_protocols : matchers.protocols;
-            var allowed_ports = _.isNull(matchers) ? default_ports : matchers.ports;
-            var allowed_tlds = _.isNull(matchers) ? default_tlds : matchers.tlds;
-            
-            if(allowed_protocols !== 'all' && allowed_protocols.indexOf(url.protocol) === -1){
-                return format("{0} is not in the list of allowed protocols for {1}", url.protocol, attribute);
-            }
-            if(allowed_ports !== 'all' && allowed_ports.indexOf(url.port) === -1){
-                return format("{0} is not in the list of allowed ports for {1}", url.port, attribute);
-            }
-            if(allowed_tlds !== 'all' && allowed_tlds.indexOf(url.host) === -1){
-                return format("{0} is not in the list of valid top-level domains for ", url.host, attribute);
             }
         }
     };
