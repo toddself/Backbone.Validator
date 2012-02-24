@@ -1,13 +1,15 @@
 <title>Backbone.Validator</title>
-<link href="markdown.css" rel="stylesheet"></link>	
+<link href="markdown.css" rel="stylesheet"></link>     
 <link rel="stylesheet" href="http://yandex.st/highlightjs/6.1/styles/default.min.css">
 <script src="http://yandex.st/highlightjs/6.1/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
 
 # Backbone.Validator
 
-## Known Issues
-`is_url`causes a `RangeError: Maximum call stack size exceeded` when it's enabled.  Avoid using this tester for now!
+## Versions
+0.2.0 - Initial release
+0.2.5 - Pre-Defined validators
+0.3.0 - Added `format`, removed `is_url` validator (not useful)
 
 ## Backbone Version
 This plug-in is only tested with Backbone 0.9.1.  You'll also need to make sure you're on Underscore 1.3.1.  Not that it won't work with older versions, but there's no guarantees.
@@ -21,7 +23,6 @@ By default, `use_defaults` is set to `false`.  When you're creating your model, 
 
 ## Defining Validators
 Validators are defined in the `validator` object as part of the model setup.  If the value passed in doesn't meet your criteria for a valid value, return any value.  If it does match your criteria, return nothing (`undefined`).  You may attach multiple validators to each attribute -- they will be run in the order in which they are attached.  If one of them fails, the entire validation will fail and `error` will be triggered.
-
 
     var TestModel = Backbone.Model.extend({
        validators: {
@@ -42,12 +43,10 @@ Validators are defined in the `validator` object as part of the model setup.  If
     test_model.set({title: false});
     test_model.get('title');
     "I am a title!"
-
-   
+  
    
 ## Catching errors
 You can catch errors and do something with them by attaching a listener to the `error` event which is triggered when the validation fails.
-
 
     TestModel.extend({
         initialize: function(){
@@ -66,8 +65,7 @@ You can catch errors and do something with them by attaching a listener to the `
     "The title has to be a valid string"
     test_model.get('title');
     "I am a title!" 
-
-    
+ 
 ## Defaults
 You can have the validation framework substitute a reasonable default for an invalid option.  This is useful when bootstrapping the model from an untrusted source.
 
@@ -130,6 +128,7 @@ The pre-defined validators list may be added to by extending the Backbone.Valida
 
 ### List of pre-defined validators
 
+
     range: function(value, range, attribute){
         if(_.isArray(range) && range.length === 2){
             if((value < range[0]) || (value > range[1])){
@@ -180,58 +179,14 @@ The pre-defined validators list may be added to by extending the Backbone.Valida
         if(value !== example){
             return format("{0} is not the same as {1} for {2}", value, example, attribute);
         }
-    },
-
-    is_url: function(value, matchers, attribute){
-        // this is tricky since ICANN is going to let anything be a TLD.
-        // which means we could have a doman name of 129.122.com or hostname.12
-        // so we are not going to even bother with checking the validity of
-        // the host other than allowing a restricted list of TLDs to match
-        // against, as well as a restricted list of protocols and ports.
-        // Anything more specific should be registered as either a custom
-        // validator function or a regex to be passed to the regex tester     
-        //
-        // matchers is an object with the following pattern:
-        // matchers = {
-        //     protocols = ['https', 'http', 'ftp'],
-        //     ports = [80, 8080, 23, 443],
-        //     tlds = ['.com', '.co.uk']
-        // }
-        //
-        // Setting any of the parameters to "all" will allow ALL values bascially
-        // not performing validation on that part of the value.  Should all of
-        // these values be set to 'all' no validation will actually be performed.               
-    
-        var url = document.createElement('a');
-        url.href = value;
-    
-        var allowed_protocols = _.isNull(matchers) ? default_protocols : matchers.protocols;
-        var allowed_ports = _.isNull(matchers) ? default_ports : matchers.ports;
-        var allowed_tlds = _.isNull(matchers) ? default_tlds : matchers.tlds;
-    
-        if(allowed_protocols !== 'all' && allowed_protocols.indexOf(url.protocol) === -1){
-            return format("{0} is not in the list of allowed protocols for {1}", url.protocol, attribute);
-        }
-        if(allowed_ports !== 'all' && allowed_ports.indexOf(url.port) === -1){
-            return format("{0} is not in the list of allowed ports for {1}", url.port, attribute);
-        }
-        if(allowed_tlds !== 'all' && allowed_tlds.indexOf(url.host) === -1){
-            return format("{0} is not in the list of valid top-level domains for ", url.host, attribute);
-        }
     }
-
-### Predefined values for testers
-
-    var default_protocols = ['http', 'https'];
-    var default_ports = [80, 443];
-
 
 ## Inspiration
 
 The inspiration for this comes directly (along with the `format` function) from Thomas Pedersen's [Backbone.Validation](https://github.com/thedersen/backbone.validation).  There are a lot of similarities in structure, but different logic on how to perform the validations.
 
 ## License
-Copyright (C) 2012 [Broadcastr](http://broadcastr.com)
+Backbone.Validator is copyright (c) 2012 [Broadcastr](http://broadcastr.com).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
