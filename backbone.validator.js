@@ -84,7 +84,7 @@ Backbone.Validator.testers = (function(){
     var default_protocols = ['http', 'https'];
     var default_ports = [80];
     var default_tlds = 'all';
-    // borrowed
+    // borrowed from https://github.com/thedersen/backbone.validation
     var format = function() {
         var args = Array.prototype.slice.call(arguments);
         var text = args.shift();
@@ -97,55 +97,55 @@ Backbone.Validator.testers = (function(){
         range: function(value, range, attribute){
             if(_.isArray(range) && range.length === 2){
                 if((value < range[0]) || (value > range[1])){
-                    return value+" is not within the range "+range[0]+" "+range[1];
+                    return format('{0} is not within the range {1} - {2} for {3}', value, range[0], range[1], attribute)
                 }
             }
         },
         
         is_type: function(value, type, attribute){
             if(typeof(value) !== type){
-                return "Expected "+value+" to be of type "+type;
+                return format("Expected {0} to be of type {1} for {2} "value, type, attribute);
             }
         },
         
         regex: function(value, re, attribute){
             if(_.isRegExp(re)){
                 if(!re.test(value)){
-                    return value+" did not match pattern "+re.toString();
+                    return format("{0} did not match pattern {1} for {2}", value, re.toString(), attribute);
                 }
             }
         },
         
         in_list: function(value, list, attribute){
             if(_.isArray(list) && list.indexOf(value) === -1){
-                return value+" is not part of ["+list.join(', ')+"]";
+                return format("{0} is not part of [{1}] for {2}", value, list.join(', '), attribute);
             }
         },
         
         is_key: function(value, obj, attribute){
-            if(_.isObject(obj) && !(value in obj)){
-                return value+" is not one of ["+_(obj).keys().join(', ')+"]";
+            if(_.has(obj, value)){
+                return format("{0} is not one of [{1}] for {2}", value, _(obj).keys().join(', '), attribute);
             }
         },
         
         max_length: function(value, length, attribute){
             if(!_.isUndefined(value.length) && (value.length > length)){
-                return "attribute value is longer than "+length;
+                return format("{0} is longer than {1} for {2} ", value, length, attribute);
             }
         },
         
         min_length: function(value, length, attribute){
             if(!_.isUndefined(value.length) && (value.length < length)){
-                return value+'is shorter than '+length;
+                return format('{0} is shorter than {1} for {2}', value, length, attribute);
             }
         },
         
         to_equal: function(value, example, attribute){
             if(value !== example){
-                return value+" is not the same as "+example;
+                return format("{0} is not the same as {1} for {2}", value, example, attribute);
             }
         },
-        
+
         is_url: function(value, matchers, attribute){
             // this is tricky since ICANN is going to let anything be a TLD.
             // which means we could have a doman name of 129.122.com or hostname.12
@@ -174,13 +174,13 @@ Backbone.Validator.testers = (function(){
             var allowed_tlds = _.isNull(matchers) ? default_tlds : matchers.tlds;
             
             if(allowed_protocols !== 'all' && allowed_protocols.indexOf(url.protocol) === -1){
-                return url.protocol+" is not in the list of allowed protocols for "+attribute;
+                return format("{0} is not in the list of allowed protocols for {1}"+, url.protocol, attribute);
             }
             if(allowed_ports !== 'all' && allowed_ports.indexOf(url.port) === -1){
-                return url.port+" is not in the list of allowed ports for "+attribute;
+                return format("{0} is not in the list of allowed ports for {1}", url.port, attribute);
             }
             if(allowed_tlds !== 'all' && allowed_tlds.indexOf(url.host) === -1){
-                return url.host+" is not in the list of valid top-level domains for "+attribute;
+                return format("{0} is not in the list of valid top-level domains for ", url.host, attribute);
             }
         }
     };

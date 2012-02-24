@@ -107,95 +107,22 @@ t.get('title');
 
 ### Extending the pre-defined validators
 
+The pre-defined validators list may be added to by extending the Backbone.Validator.testers object.
+
+```javascript
+_.extend(Backbone.Validator.testers, {
+    no_hotdogs_without_mustard: function(value, mustard, attribute){
+        if(value.indexOf('hotdogs') > -1 && mustard === false){
+            return format('{0} MAY NOT BE A HOTDOG WITHOUT MUSTARD!', attribute);
+        }
+    }
+});
+```
+
 ### List of pre-defined validators
 
 ```javascript
-range: function(value, range){
-    if(_.isArray(range) && range.length === 2){
-        if((value < range[0]) || (value > range[1])){
-            return value+" is not within the range "+range[0]+" "+range[1];
-        }
-    }
-},
 
-is_type: function(value, type){
-    if(typeof(value) !== type){
-        return "Expected "+value+" to be of type "+type;
-    }
-},
-
-regex: function(value, re){
-    if(_.isRegExp(re)){
-        if(!re.test(value)){
-            return value+" did not match pattern "+re.toString();
-        }
-    }
-},
-
-in_list: function(value, list){
-    if(_.isArray(list) && list.indexOf(value) === -1){
-        return value+" is not part of ["+list.join(', ')+"]";
-    }
-},
-
-is_key: function(value, obj){
-    if(_.isObject(obj) && !(value in obj)){
-        return value+" is not one of ["+_(obj).keys().join(', ')+"]";
-    }
-},
-
-max_length: function(value, length){
-    if(!_.isUndefined(value.length) && (value.length > length)){
-        return "attribute value is longer than "+length;
-    }
-},
-
-min_length: function(value, length){
-    if(!_.isUndefined(value.length) && (value.length < length)){
-        return value+'is shorter than '+length;
-    }
-},
-
-to_equal: function(value, example, attribute){
-    if(value !== example){
-        return value+" is not the same as "+example;
-    }
-},
-is_url: function(value, matchers, attribute){
-    // this is tricky since ICANN is going to let anything be a TLD.
-    // which means we could have a doman name of 129.122.com or hostname.12
-    // so we are not going to even bother with checking the validity of
-    // the host other than allowing a restricted list of TLDs to match
-    // against, as well as a restricted list of protocols and ports.
-    // Anything more specific should be registered as either a custom
-    // validator function or a regex to be passed to the regex tester
-    //
-    // matchers is an object with the following pattern:
-    // matchers = {
-    //     protocols = ['https', 'http', 'ftp'],
-    //     ports = [80, 8080, 23, 443],
-    //     tlds = ['.com', '.co.uk']
-    // }
-    //
-    // Setting any of the parameters to "all" will allow ALL values bascially
-    // not performing validation on that part of the value.  Should all of
-    // these values be set to 'all' no validation will actually be performed.
-       
-    var url = document.createElement('a');
-    url.href = value;
-    var allowed_protocols = matchers.protocols || default_protocols;
-    var allowed_ports = matchers.ports || default_ports;
-    var allowed_tlds = matchers.tlds || 'all';
-    if(allowed_protocols.indexOf(url.protocol) === -1){
-        return url.protocol+" is not in the list of allowed protocols for "+attribute;
-    }
-    if(allowed_ports.indexOf(url.port) === -1){
-        return url.port+" is not in the list of allowed ports for "+attribute;
-    }
-    if(allowed_tlds !== 'all' && allowed_tlds.indexOf(url.host) === -1){
-        return url.host+" is not in the list of valid top-level domains for "+attribute;
-    }
-}
 
 ```
 
@@ -205,6 +132,10 @@ is_url: function(value, matchers, attribute){
 var default_protocols = ['http', 'https'];
 var default_ports = [80, 443];
 ```
+
+## Inspiration
+
+The inspiration for this comes directly (along with the `format` function) from Thomas Pedersen's [Backbone.Validation](https://github.com/thedersen/backbone.validation).  There are a lot of similarities in structure, but different logic on how to perform the validations.
 
 
 ## Copyright
