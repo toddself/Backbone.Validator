@@ -111,7 +111,7 @@ Backbone.Validator.testers = (function(){
         },
         
         is_key: function(value, obj, attribute){
-            if(_.isObject(obj) && !(value in obj)){
+            if(_.has(obj, value)){
                 return value+" is not one of ["+_(obj).keys().join(', ')+"]";
             }
         },
@@ -132,7 +132,9 @@ Backbone.Validator.testers = (function(){
             if(value !== example){
                 return value+" is not the same as "+example;
             }
-        }
+        },
+        
+        
         
     };
 }());
