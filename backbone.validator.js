@@ -1,4 +1,4 @@
-// Backbone.Validator v0.3.0
+// Backbone.Validator v0.3.5
 //
 // Copyright (C) 2012 Broadcastr
 // Author: Todd Kennedy <todd@broadcastr.com>
@@ -9,6 +9,7 @@
 
 Backbone.Validator = (function(){
     var get_validators = function(model, attr){
+        console.log('getting validators for', attr);
         // we want to gather all the validators that are present for this attribute
         var validators = [];
         _(model.validators[attr]).each(function(val, key){
@@ -41,7 +42,7 @@ Backbone.Validator = (function(){
         return errors;
     };
     
-    var set_default = function(model){
+    var set_default = function(model, attr){
         // if the validation fails and the user wants to use the default that's been defined
         // we'll do that here.  We have to set {silent: true} to prevent a recursive call
         // from being made.  This, of course, assumes that the default is valid. But if it's not
@@ -53,28 +54,39 @@ Backbone.Validator = (function(){
         }        
     };
     
+    var get_changed_attributes = function(previous, current){
+        var changedAttributes = [];
+        _(current).each(function(val, key){
+            if(!_(previous).has(key)){
+                changedAttributes.push(key);
+            } else if (!_.isEqual(val, previous[key])){
+                changedAttributes.push(key);
+            }
+        });
+        return changedAttributes;
+    };
+    
     return {
         // extend the model with these values.
         use_defaults: false,
         
         validate: function(attrs) {
             var model = this;
-            var previousAttributes = model.previousAttributes();
-            // do we have any changed attributes
-            if(_.isObject(previousAttributes) && _.isObject(model.validators)){
+            var changedAttributes = get_changed_attributes(model.previousAttributes(), attrs);
+            if(_.isObject(model.validators)){
                 // for each attribute changed...
-                for(attr in previousAttributes){
+                _(changedAttributes).each(function(attr){
                     if(_.isObject(model.validators[attr])){
                         var model_validators = get_validators(model, attr);
                         var errors = run_validators(attrs[attr], model_validators, attr);
                         if(errors.length > 0){  
                             if(model.use_defaults || attrs.use_defaults){
-                                set_default(model);
+                                set_default(model, attr);
                             }                          
                             return errors;
                         }
-                    }
-                }
+                    }  
+                });             
             }
         }
     };
@@ -107,10 +119,9 @@ Backbone.Validator.testers = (function(){
         },
         
         regex: function(value, re, attribute){
-            if(_.isRegExp(re)){
-                if(!re.test(value)){
-                    return format("{0} did not match pattern {1} for {2}", value, re.toString(), attribute);
-                }
+            var regex = new RegExp(re);
+            if(!regex.test(value)){
+                return format("{0} did not match pattern {1} for {2}", value, regex.toString(), attribute);
             }
         },
         
@@ -141,6 +152,18 @@ Backbone.Validator.testers = (function(){
         to_equal: function(value, example, attribute){
             if(value !== example){
                 return format("{0} is not the same as {1} for {2}", value, example, attribute);
+            }
+        },
+        
+        min_value: function(value, limit, attribute){
+            if(value < limit){
+                return format("{0} is smaller than {1} for {2}", value, limit, attribute);
+            }
+        },
+        
+        max_value: function(value, limit, attribute){
+            if(value > limit){
+                return format("{0} exceeds {1} for {2}", value, limit, attribute);
             }
         }
     };
