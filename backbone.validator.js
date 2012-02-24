@@ -1,4 +1,4 @@
-// Backbone.Validator v0.3.5
+// Backbone.Validator v0.4
 //
 // Copyright (C) 2012 Broadcastr
 // Author: Todd Kennedy <todd@broadcastr.com>
@@ -81,6 +81,7 @@ Backbone.Validator = (function(){
                     if(_.isObject(model.validators[attr])){
                         var model_validators = get_validators(model, attr);
                         errors = run_validators(attrs[attr], model_validators, attr);
+                        console.log(attr, attrs[attr], errors)
                         if(errors.length > 0){  
                             if(model.use_defaults || attrs.use_defaults){
                                 // _.defer(model.trigger('validator:user_defaults', model, attr, errors));
@@ -117,14 +118,23 @@ Backbone.Validator.testers = (function(){
         },
         
         is_type: function(value, type, attribute){
-            if(typeof(value) !== type){
-                return format("Expected {0} to be of type {1} for {2} ", value, type, attribute);
-            }
+            // if type is date we'll do something different.
+            // also, https://github.com/documentcloud/underscore/pull/489 means we're not going to use _.isDate
+            if(type === 'date'){
+                if(_.isNaN(value.valueOf()) || toString.call(value) != '[object Date]'){
+                    return format("Expected {0} to be a valid date for {1}", value, attribute);
+                }
+            } else {
+                if(typeof(value) !== type){
+                    return format("Expected {0} to be of type {1} for {2} ", value, type, attribute);
+                }
+                
+            }            
         },
         
         regex: function(value, re, attribute){
             var regex = new RegExp(re);
-            if(!regex.test(value)){
+            if(regex.test(value)){
                 return format("{0} did not match pattern {1} for {2}", value, regex.toString(), attribute);
             }
         },
