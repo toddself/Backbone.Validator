@@ -104,7 +104,7 @@ Backbone.Validator.testers = (function(){
         
         is_type: function(value, type, attribute){
             if(typeof(value) !== type){
-                return format("Expected {0} to be of type {1} for {2} "value, type, attribute);
+                return format("Expected {0} to be of type {1} for {2} ", value, type, attribute);
             }
         },
         
@@ -174,7 +174,7 @@ Backbone.Validator.testers = (function(){
             var allowed_tlds = _.isNull(matchers) ? default_tlds : matchers.tlds;
             
             if(allowed_protocols !== 'all' && allowed_protocols.indexOf(url.protocol) === -1){
-                return format("{0} is not in the list of allowed protocols for {1}"+, url.protocol, attribute);
+                return format("{0} is not in the list of allowed protocols for {1}", url.protocol, attribute);
             }
             if(allowed_ports !== 'all' && allowed_ports.indexOf(url.port) === -1){
                 return format("{0} is not in the list of allowed ports for {1}", url.port, attribute);
