@@ -9,7 +9,6 @@
 
 Backbone.Validator = (function(){
     var get_validators = function(model, attr){
-        console.log('getting validators for', attr);
         // we want to gather all the validators that are present for this attribute
         var validators = [];
         _(model.validators[attr]).each(function(val, key){
@@ -42,7 +41,7 @@ Backbone.Validator = (function(){
         return errors;
     };
     
-    var set_default = function(model, attr){
+    var set_default = function(model, attr, errors){
         // if the validation fails and the user wants to use the default that's been defined
         // we'll do that here.  We have to set {silent: true} to prevent a recursive call
         // from being made.  This, of course, assumes that the default is valid. But if it's not
@@ -51,6 +50,7 @@ Backbone.Validator = (function(){
             var defaults = {silent: true};
             defaults[attr] = model.defaults[attr];
             model.set(defaults);
+            return errors;
         }        
     };
     
@@ -71,6 +71,7 @@ Backbone.Validator = (function(){
         use_defaults: false,
         
         validate: function(attrs) {
+            var errors;
             var model = this;
             var changedAttributes = get_changed_attributes(model.previousAttributes(), attrs);
             if(_.isObject(model.validators)){
@@ -78,12 +79,12 @@ Backbone.Validator = (function(){
                 _(changedAttributes).each(function(attr){
                     if(_.isObject(model.validators[attr])){
                         var model_validators = get_validators(model, attr);
-                        var errors = run_validators(attrs[attr], model_validators, attr);
+                        errors = run_validators(attrs[attr], model_validators, attr);
                         if(errors.length > 0){  
                             if(model.use_defaults || attrs.use_defaults){
-                                set_default(model, attr);
-                            }                          
-                            return errors;
+                                set_default(model, attr, errors);
+                            }
+                            return errors;                
                         }
                     }  
                 });             
