@@ -1,4 +1,4 @@
-// Backbone.Validator v0.4.1
+// Backbone.Validator v0.4.2
 //
 // Copyright (C) 2012 Broadcastr
 // Author: Todd Kennedy <todd@broadcastr.com>
@@ -56,8 +56,8 @@ Backbone.Validator = (function(){
             } else {
                 errors = errors.concat(default_errors);
             }
-            model.trigger('error', model, errors);
-        }        
+        }
+        model.trigger('error', model, errors);
     };
     
     var get_changed_attributes = function(previous, current){
@@ -115,7 +115,7 @@ Backbone.Validator.testers = (function(){
     return {
         range: function(value, range, attribute){
             if(_.isArray(range) && range.length === 2){
-                if((value < range[0]) || (value > range[1])){
+                if(!_.isNumber(value) || (value < range[0]) || (value > range[1])){
                     return format('{0} is not within the range {1} - {2} for {3}', value, range[0], range[1], attribute);
                 }
             }
