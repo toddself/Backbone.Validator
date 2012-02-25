@@ -91,7 +91,7 @@ Backbone.Validator = (function(){
                     }  
                 });             
             }
-            if(errors.length > 0){
+            if(_.isArray(errors) && errors.length > 0){
                 return errors;                
             }
         }
