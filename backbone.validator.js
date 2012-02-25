@@ -1,4 +1,4 @@
-// Backbone.Validator v0.4
+// Backbone.Validator v0.4.1
 //
 // Copyright (C) 2012 Broadcastr
 // Author: Todd Kennedy <todd@broadcastr.com>
@@ -41,15 +41,21 @@ Backbone.Validator = (function(){
         return errors;
     };
     
-    var set_default = function(model, attr, errors){
+    var set_default = function(model, attr, errors, model_validators){
         // if the validation fails and the user wants to use the default that's been defined
         // we'll do that here.  We have to set {silent: true} to prevent a recursive call
-        // from being made.  This, of course, assumes that the default is valid. But if it's not
-        // it's getting set anyway!
+        // from being made.
+        // Apparently that doesn't actually work and it's still trying to validate the default.
+        // So we need to check the default before we try to set it.
         if(_.isObject(model.defaults) && (attr in model.defaults)){
-            var defaults = {silent: true};
-            defaults[attr] = model.defaults[attr];
-            model.set(defaults);
+            var default_errors = run_validators(model.defaults[attr], model_validators, attr);
+            if(default_errors.length < 1){
+                var defaults = {};
+                defaults[attr] = model.defaults[attr];
+                model.set(defaults);                
+            } else {
+                errors = errors.concat(default_errors);
+            }
             model.trigger('error', model, errors)
         }        
     };
@@ -84,8 +90,7 @@ Backbone.Validator = (function(){
                         console.log(attr, attrs[attr], errors)
                         if(errors.length > 0){  
                             if(model.use_defaults || attrs.use_defaults){
-                                // _.defer(model.trigger('validator:user_defaults', model, attr, errors));
-                                set_default(model, attr, errors);
+                                set_default(model, attr, errors, model_validators);
                                 return errors;
                             }
                             return errors;                

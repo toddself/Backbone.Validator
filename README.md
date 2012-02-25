@@ -1,6 +1,7 @@
 # Backbone.Validator
 
 ## Versions
+* 0.4.1 - The default is now validated and rejected should it not match the validation rules.  This should *hopefully* fix the call stack issues.
 * 0.4.0 - Fixed many recursion bugs, `error` fires correctly even when `use_defaults` is `true`.  Passes 17 test cases so far.
 * 0.3.0 - Added `format`, removed `is_url` validator (not useful)
 * 0.2.5 - Pre-Defined validators
