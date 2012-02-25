@@ -10,16 +10,16 @@
 Backbone.Validator = (function(){
     var get_validators = function(model, attr){
         // we want to gather all the validators that are present for this attribute
-        var validators = [];
+        var validators = [], v;
         _(model.validators[attr]).each(function(val, key){
             // custom functions just get pushed into the validators list
             if(key === 'fn'){
-                var v = {fn: model.validators[attr].fn, opt: null};
+                v = {fn: model.validators[attr].fn, opt: null};
                 validators.push(v);
             } else {
                 // and we'll see if the other validators are preset
                 if(key in Backbone.Validator.testers){
-                    var v = {fn: Backbone.Validator.testers[key], opt: model.validators[attr][key]}
+                    v = {fn: Backbone.Validator.testers[key], opt: model.validators[attr][key]};
                     validators.push(v);
                 }
             }
@@ -56,7 +56,7 @@ Backbone.Validator = (function(){
             } else {
                 errors = errors.concat(default_errors);
             }
-            model.trigger('error', model, errors)
+            model.trigger('error', model, errors);
         }        
     };
     
@@ -108,7 +108,7 @@ Backbone.Validator.testers = (function(){
         var args = Array.prototype.slice.call(arguments);
         var text = args.shift();
         return text.replace(/\{(\d+)\}/g, function(match, number) {
-            return typeof args[number] != 'undefined' ? args[number] : match;
+            return typeof !_.isUndefined(args[number]) ? args[number] : match;
         });
     };
     
@@ -116,7 +116,7 @@ Backbone.Validator.testers = (function(){
         range: function(value, range, attribute){
             if(_.isArray(range) && range.length === 2){
                 if((value < range[0]) || (value > range[1])){
-                    return format('{0} is not within the range {1} - {2} for {3}', value, range[0], range[1], attribute)
+                    return format('{0} is not within the range {1} - {2} for {3}', value, range[0], range[1], attribute);
                 }
             }
         },
@@ -125,7 +125,7 @@ Backbone.Validator.testers = (function(){
             // if type is date we'll do something different.
             // also, https://github.com/documentcloud/underscore/pull/489 means we're not going to use _.isDate
             if(type === 'date'){
-                if(_.isNaN(value.valueOf()) || toString.call(value) != '[object Date]'){
+                if(_.isNaN(value.valueOf()) || Object.prototype.toString.call(value) !== '[object Date]'){
                     return format("Expected {0} to be a valid date for {1}", value, attribute);
                 }
             } else {
