@@ -10,13 +10,17 @@
     
     var TestModel = Backbone.Model.extend({
         defaults: {
-            title: 'test'
+            title: 'test',
+			enumerate: 3
         },
         validators: {
             title: {
                 is_type: 'string',
                 max_length: 40
-            }
+            },
+			enumerate: {
+				in_list: [1,2,3,4]
+			}
         },
         initialize: function(){
             this.bind('error', this.print_error);
@@ -30,11 +34,11 @@
     
     var t = new TestModel();
     t.set({title: 'this is a new title'});
-    console.log(t.get('title'));
     t.set({title: false});
-    console.log(t.get('title'));
     t.set({title: 'this title is way too long to be set and it should not get set because it is way too long and like if it gets set it will suck because this is way too long'});
-    console.log(t.get('title'));
+	
+	
+
     </script>
     </head>
     <body>

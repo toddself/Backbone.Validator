@@ -45,19 +45,16 @@ Backbone.Validator = (function(){
         // if the validation fails and the user wants to use the default that's been defined
         // we'll do that here.  We have to set {silent: true} to prevent a recursive call
         // from being made.
-        // Apparently that doesn't actually work and it's still trying to validate the default.
-        // So we need to check the default before we try to set it.
         if(_.isObject(model.defaults) && (attr in model.defaults)){
             var default_errors = run_validators(model.defaults[attr], model_validators, attr);
             if(default_errors.length < 1){
-                var defaults = {};
-                defaults[attr] = model.defaults[attr];
-                model.set(defaults);                
+                model.attributes[attr] = model.defaults[attr];
             } else {
                 errors = errors.concat(default_errors);
             }
         }
         model.trigger('error', model, errors);
+        return errors;
     };
     
     var get_changed_attributes = function(previous, current){
@@ -76,8 +73,7 @@ Backbone.Validator = (function(){
         // extend the model with these values.
         use_defaults: false,
         
-        validate: function(attrs) {
-            // this.on('validator:use_defaults', set_default);
+        validate: function(attrs, options) {
             var errors;
             var model = this;
             var changedAttributes = get_changed_attributes(model.previousAttributes(), attrs);
@@ -89,13 +85,14 @@ Backbone.Validator = (function(){
                         errors = run_validators(attrs[attr], model_validators, attr);
                         if(errors.length > 0){  
                             if(model.use_defaults || attrs.use_defaults){
-                                set_default(model, attr, errors, model_validators);
-                                return errors;
+                                set_default(model, attr, errors, model_validators);                         
                             }
-                            return errors;                
                         }
                     }  
                 });             
+            }
+            if(errors.length > 0){
+                return errors;                
             }
         }
     };
