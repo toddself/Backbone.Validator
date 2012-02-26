@@ -1,4 +1,4 @@
-// Backbone.Validator v0.4.2
+// Backbone.Validator v0.4.3
 //
 // Copyright (C) 2012 Broadcastr
 // Author: Todd Kennedy <todd@broadcastr.com>
@@ -141,7 +141,7 @@ Backbone.Validator.testers = (function(){
         },
         
         in_list: function(value, list, attribute){
-            if(_.isArray(list) && list.indexOf(value) === -1){
+            if(_.isArray(list) && _.indexOf(list, value) === -1){
                 return format("{0} is not part of [{1}] for {2}", value, list.join(', '), attribute);
             }
         },
