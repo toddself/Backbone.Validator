@@ -11,6 +11,9 @@
 <h2>Versions</h2>
 
 <ul>
+<li>0.92.0 - Cleaned up the code a little, removed console.log statements, and changed <code>to_equal</code> to use <code>_.isEqual</code> for better comparison. Added comments for annotated source code, and started porting in tests from our internal codebase.  Matching latest Backbone version tested against.</li>
+<li>0.4.3 - IE doesn't support <code>Array.prototype.indexOf</code>, switched to <code>_.indexOf()</code></li>
+<li>0.4.1 - The default is now validated and rejected should it not match the validation rules.  This should <em>hopefully</em> fix the call stack issues.</li>
 <li>0.4.0 - Fixed many recursion bugs, <code>error</code> fires correctly even when <code>use_defaults</code> is <code>true</code>.  Passes 17 test cases so far.</li>
 <li>0.3.0 - Added <code>format</code>, removed <code>is_url</code> validator (not useful)</li>
 <li>0.2.5 - Pre-Defined validators</li>
@@ -141,17 +144,19 @@ t.get('title');
 
 <h3>List of pre-defined validators</h3>
 
-<pre><code>range: function(value, range, attribute){
+<pre><code>// does the value exist within a given range, inclusive
+range: function(value, range, attribute){
     if(_.isArray(range) &amp;&amp; range.length === 2){
-        if((value &lt; range[0]) || (value &gt; range[1])){
+        if((value &lt;= range[0]) || (value &gt;= range[1])){
             return format('{0} is not within the range {1} - {2} for {3}', value, range[0], range[1], attribute)
         }
     }
 },
 
+// if type is date we'll do something different.
+// also, (Underscore: add `_.isValidDate`)[https://github.com/documentcloud/underscore/pull/489] means we're not going to use _.isDate
+// and since this is generic we can't use our forked version
 is_type: function(value, type, attribute){
-    // if type is date we'll do something different.
-    // also, https://github.com/documentcloud/underscore/pull/489 means we're not going to use _.isDate
     if(type === 'date'){
         if(_.isNaN(value.valueOf()) || toString.call(value) != '[object Date]'){
             return format("Expected {0} to be a valid date for {1}", value, attribute);
@@ -164,41 +169,60 @@ is_type: function(value, type, attribute){
     }            
 },
 
+// Does it pass a regular expression test
 regex: function(value, re, attribute){
-    if(_.isRegExp(re)){
-        if(!re.test(value)){
-            return format("{0} did not match pattern {1} for {2}", value, re.toString(), attribute);
-        }
+    var regex = new RegExp(re);
+    if(regex.test(value)){
+        return format("{0} did not match pattern {1} for {2}", value, regex.toString(), attribute);
     }
 },
 
+// is it present in a given list
 in_list: function(value, list, attribute){
     if(_.isArray(list) &amp;&amp; list.indexOf(value) === -1){
         return format("{0} is not part of [{1}] for {2}", value, list.join(', '), attribute);
     }
 },
 
+// is a key of an object
 is_key: function(value, obj, attribute){
     if(_.has(obj, value)){
         return format("{0} is not one of [{1}] for {2}", value, _(obj).keys().join(', '), attribute);
     }
 },
 
+// not too long
 max_length: function(value, length, attribute){
     if(!_.isUndefined(value.length) &amp;&amp; (value.length &gt; length)){
         return format("{0} is longer than {1} for {2} ", value, length, attribute);
     }
 },
 
+// and not to short
 min_length: function(value, length, attribute){
     if(!_.isUndefined(value.length) &amp;&amp; (value.length &lt; length)){
         return format('{0} is shorter than {1} for {2}', value, length, attribute);
     }
 },
 
+// are they the same
 to_equal: function(value, example, attribute){
-    if(value !== example){
+    if(!_.isEqual(value, example)){
         return format("{0} is not the same as {1} for {2}", value, example, attribute);
+    }
+},
+
+// unbounded top 
+min_value: function(value, limit, attribute){
+    if(value &lt; limit){
+        return format("{0} is smaller than {1} for {2}", value, limit, attribute);
+    }
+},
+
+// unbounded bottom
+max_value: function(value, limit, attribute){
+    if(value &gt; limit){
+        return format("{0} exceeds {1} for {2}", value, limit, attribute);
     }
 }
 </code></pre>
@@ -207,9 +231,13 @@ to_equal: function(value, example, attribute){
 
 <p>The inspiration for this comes directly (along with the <code>format</code> function) from Thomas Pedersen's <a href="https://github.com/thedersen/backbone.validation">Backbone.Validation</a>.  There are a lot of similarities in structure, but different logic on how to perform the validations.</p>
 
+<h2>Copyright</h2>
+
+<p>Backbone.Validator is copyright (c) 2012 Broadcastr.</p>
+
 <h2>License</h2>
 
-<p>Backbone.Validator is copyright (c) 2012 <a href="http://broadcastr.com">Broadcastr</a>.</p>
+<p>Copyright (C) 2012 Broadcastr</p>
 
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
 

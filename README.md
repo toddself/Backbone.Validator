@@ -1,12 +1,17 @@
-<title>Backbone.Validator</title>
-<link href="markdown.css" rel="stylesheet"></link>     
-<link rel="stylesheet" href="http://yandex.st/highlightjs/6.1/styles/default.min.css">
+<p><title>Backbone.Validator</title>
+<link href="markdown.css" rel="stylesheet"></link> <br />
+<link rel="stylesheet" href="http://yandex.st/highlightjs/6.1/styles/default.min.css"></p>
+
 <script src="http://yandex.st/highlightjs/6.1/highlight.min.js"></script>
+
 <script>hljs.initHighlightingOnLoad();</script>
 
 # Backbone.Validator
 
 ## Versions
+* 0.92.0 - Cleaned up the code a little, removed console.log statements, and changed `to_equal` to use `_.isEqual` for better comparison. Added comments for annotated source code, and started porting in tests from our internal codebase.  Matching latest Backbone version tested against.
+* 0.4.3 - IE doesn't support `Array.prototype.indexOf`, switched to `_.indexOf()`
+* 0.4.1 - The default is now validated and rejected should it not match the validation rules.  This should *hopefully* fix the call stack issues.
 * 0.4.0 - Fixed many recursion bugs, `error` fires correctly even when `use_defaults` is `true`.  Passes 17 test cases so far.
 * 0.3.0 - Added `format`, removed `is_url` validator (not useful)
 * 0.2.5 - Pre-Defined validators
@@ -24,6 +29,7 @@ By default, `use_defaults` is set to `false`.  When you're creating your model, 
 
 ## Defining Validators
 Validators are defined in the `validator` object as part of the model setup.  If the value passed in doesn't meet your criteria for a valid value, return any value.  If it does match your criteria, return nothing (`undefined`).  You may attach multiple validators to each attribute -- they will be run in the order in which they are attached.  If one of them fails, the entire validation will fail and `error` will be triggered.
+
 
     var TestModel = Backbone.Model.extend({
        validators: {
@@ -44,10 +50,12 @@ Validators are defined in the `validator` object as part of the model setup.  If
     test_model.set({title: false});
     test_model.get('title');
     "I am a title!"
-  
+
+   
    
 ## Catching errors
 You can catch errors and do something with them by attaching a listener to the `error` event which is triggered when the validation fails.
+
 
     TestModel.extend({
         initialize: function(){
@@ -66,7 +74,8 @@ You can catch errors and do something with them by attaching a listener to the `
     "The title has to be a valid string"
     test_model.get('title');
     "I am a title!" 
- 
+
+    
 ## Defaults
 You can have the validation framework substitute a reasonable default for an invalid option.  This is useful when bootstrapping the model from an untrusted source.
 
@@ -126,22 +135,24 @@ The pre-defined validators list may be added to by extending the Backbone.Valida
         }
     });
 
+
 `is_type` allows for checking of `date` objects now.
 
 ### List of pre-defined validators
 
-
+    // does the value exist within a given range, inclusive
     range: function(value, range, attribute){
         if(_.isArray(range) && range.length === 2){
-            if((value < range[0]) || (value > range[1])){
+            if((value <= range[0]) || (value >= range[1])){
                 return format('{0} is not within the range {1} - {2} for {3}', value, range[0], range[1], attribute)
             }
         }
     },
 
+    // if type is date we'll do something different.
+    // also, (Underscore: add `_.isValidDate`)[https://github.com/documentcloud/underscore/pull/489] means we're not going to use _.isDate
+    // and since this is generic we can't use our forked version
     is_type: function(value, type, attribute){
-        // if type is date we'll do something different.
-        // also, https://github.com/documentcloud/underscore/pull/489 means we're not going to use _.isDate
         if(type === 'date'){
             if(_.isNaN(value.valueOf()) || toString.call(value) != '[object Date]'){
                 return format("Expected {0} to be a valid date for {1}", value, attribute);
@@ -150,54 +161,78 @@ The pre-defined validators list may be added to by extending the Backbone.Valida
             if(typeof(value) !== type){
                 return format("Expected {0} to be of type {1} for {2} ", value, type, attribute);
             }
-            
+        
         }            
     },
 
+    // Does it pass a regular expression test
     regex: function(value, re, attribute){
-        if(_.isRegExp(re)){
-            if(!re.test(value)){
-                return format("{0} did not match pattern {1} for {2}", value, re.toString(), attribute);
-            }
+        var regex = new RegExp(re);
+        if(regex.test(value)){
+            return format("{0} did not match pattern {1} for {2}", value, regex.toString(), attribute);
         }
     },
 
+    // is it present in a given list
     in_list: function(value, list, attribute){
         if(_.isArray(list) && list.indexOf(value) === -1){
             return format("{0} is not part of [{1}] for {2}", value, list.join(', '), attribute);
         }
     },
 
+    // is a key of an object
     is_key: function(value, obj, attribute){
         if(_.has(obj, value)){
             return format("{0} is not one of [{1}] for {2}", value, _(obj).keys().join(', '), attribute);
         }
     },
 
+    // not too long
     max_length: function(value, length, attribute){
         if(!_.isUndefined(value.length) && (value.length > length)){
             return format("{0} is longer than {1} for {2} ", value, length, attribute);
         }
     },
 
+    // and not to short
     min_length: function(value, length, attribute){
         if(!_.isUndefined(value.length) && (value.length < length)){
             return format('{0} is shorter than {1} for {2}', value, length, attribute);
         }
     },
 
+    // are they the same
     to_equal: function(value, example, attribute){
-        if(value !== example){
+        if(!_.isEqual(value, example)){
             return format("{0} is not the same as {1} for {2}", value, example, attribute);
         }
+    },
+
+    // unbounded top 
+    min_value: function(value, limit, attribute){
+        if(value < limit){
+            return format("{0} is smaller than {1} for {2}", value, limit, attribute);
+        }
+    },
+
+    // unbounded bottom
+    max_value: function(value, limit, attribute){
+        if(value > limit){
+            return format("{0} exceeds {1} for {2}", value, limit, attribute);
+        }
     }
+
 
 ## Inspiration
 
 The inspiration for this comes directly (along with the `format` function) from Thomas Pedersen's [Backbone.Validation](https://github.com/thedersen/backbone.validation).  There are a lot of similarities in structure, but different logic on how to perform the validations.
 
+
+## Copyright
+Backbone.Validator is copyright (c) 2012 Broadcastr.
+
 ## License
-Backbone.Validator is copyright (c) 2012 [Broadcastr](http://broadcastr.com).
+Copyright (C) 2012 Broadcastr
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
