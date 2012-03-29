@@ -1,6 +1,7 @@
 # Backbone.Validator
 
 ## Versions
+* 0.92.0 - Cleaned up the code a little, removed console.log statements, and changed `to_equal` to use `_.isEqual` for better comparison. Added comments for annotated source code, and started porting in tests from our internal codebase.  Matching latest Backbone version tested against.
 * 0.4.3 - IE doesn't support `Array.prototype.indexOf`, switched to `_.indexOf()`
 * 0.4.1 - The default is now validated and rejected should it not match the validation rules.  This should *hopefully* fix the call stack issues.
 * 0.4.0 - Fixed many recursion bugs, `error` fires correctly even when `use_defaults` is `true`.  Passes 17 test cases so far.
@@ -132,17 +133,19 @@ _.extend(Backbone.Validator.testers, {
 ### List of pre-defined validators
 
 ```javascript
+// does the value exist within a given range, inclusive
 range: function(value, range, attribute){
     if(_.isArray(range) && range.length === 2){
-        if((value < range[0]) || (value > range[1])){
+        if((value <= range[0]) || (value >= range[1])){
             return format('{0} is not within the range {1} - {2} for {3}', value, range[0], range[1], attribute)
         }
     }
-}
+},
 
+// if type is date we'll do something different.
+// also, (Underscore: add `_.isValidDate`)[https://github.com/documentcloud/underscore/pull/489] means we're not going to use _.isDate
+// and since this is generic we can't use our forked version
 is_type: function(value, type, attribute){
-    // if type is date we'll do something different.
-    // also, https://github.com/documentcloud/underscore/pull/489 means we're not going to use _.isDate
     if(type === 'date'){
         if(_.isNaN(value.valueOf()) || toString.call(value) != '[object Date]'){
             return format("Expected {0} to be a valid date for {1}", value, attribute);
@@ -155,50 +158,62 @@ is_type: function(value, type, attribute){
     }            
 },
 
+// Does it pass a regular expression test
 regex: function(value, re, attribute){
-    if(_.isRegExp(re)){
-        if(!re.test(value)){
-            return format("{0} did not match pattern {1} for {2}", value, re.toString(), attribute);
-        }
+    var regex = new RegExp(re);
+    if(regex.test(value)){
+        return format("{0} did not match pattern {1} for {2}", value, regex.toString(), attribute);
     }
 },
 
+// is it present in a given list
 in_list: function(value, list, attribute){
     if(_.isArray(list) && list.indexOf(value) === -1){
         return format("{0} is not part of [{1}] for {2}", value, list.join(', '), attribute);
     }
 },
 
+// is a key of an object
 is_key: function(value, obj, attribute){
     if(_.has(obj, value)){
         return format("{0} is not one of [{1}] for {2}", value, _(obj).keys().join(', '), attribute);
     }
 },
 
+// not too long
 max_length: function(value, length, attribute){
     if(!_.isUndefined(value.length) && (value.length > length)){
         return format("{0} is longer than {1} for {2} ", value, length, attribute);
     }
 },
 
+// and not to short
 min_length: function(value, length, attribute){
     if(!_.isUndefined(value.length) && (value.length < length)){
         return format('{0} is shorter than {1} for {2}', value, length, attribute);
     }
 },
 
+// are they the same
 to_equal: function(value, example, attribute){
-    if(value !== example){
+    if(!_.isEqual(value, example)){
         return format("{0} is not the same as {1} for {2}", value, example, attribute);
     }
+},
+
+// unbounded top 
+min_value: function(value, limit, attribute){
+    if(value < limit){
+        return format("{0} is smaller than {1} for {2}", value, limit, attribute);
+    }
+},
+
+// unbounded bottom
+max_value: function(value, limit, attribute){
+    if(value > limit){
+        return format("{0} exceeds {1} for {2}", value, limit, attribute);
+    }
 }
-```
-
-### Predefined values for testers
-
-```javascript
-var default_protocols = ['http', 'https'];
-var default_ports = [80, 443];
 ```
 
 ## Inspiration

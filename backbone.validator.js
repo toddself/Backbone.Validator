@@ -1,4 +1,4 @@
-// Backbone.Validator v0.4.3
+// Backbone.Validator v0.92
 //
 // Copyright (C) 2012 Broadcastr
 // Author: Todd Kennedy <todd@broadcastr.com>
@@ -57,6 +57,10 @@ Backbone.Validator = (function(){
         return errors;
     };
     
+    // we only want to bother with attributes that have changed so we don't 
+    // revalidate valid data OR invalidate data that was passed in during
+    // instantiation to get around model validation.  that sounds dumb, but
+    // it might be necessary
     var get_changed_attributes = function(previous, current){
         var changedAttributes = [];
         _(current).each(function(val, key){
@@ -110,6 +114,7 @@ Backbone.Validator.testers = (function(){
     };
     
     return {
+        // is the value in a given range
         range: function(value, range, attribute){
             if(_.isArray(range) && range.length === 2){
                 if(!_.isNumber(value) || (value < range[0]) || (value > range[1])){
@@ -117,10 +122,9 @@ Backbone.Validator.testers = (function(){
                 }
             }
         },
-        
+        // if type is date we'll do something different.
+        // also, (Since `_.isDate` returns true for invalid dates)[https://github.com/documentcloud/underscore/pull/489] means we're not going to use _.isDate
         is_type: function(value, type, attribute){
-            // if type is date we'll do something different.
-            // also, https://github.com/documentcloud/underscore/pull/489 means we're not going to use _.isDate
             if(type === 'date'){
                 if(_.isNaN(value.valueOf()) || Object.prototype.toString.call(value) !== '[object Date]'){
                     return format("Expected {0} to be a valid date for {1}", value, attribute);
@@ -133,6 +137,7 @@ Backbone.Validator.testers = (function(){
             }            
         },
         
+        // does it match the given regex
         regex: function(value, re, attribute){
             var regex = new RegExp(re);
             if(regex.test(value)){
@@ -140,42 +145,49 @@ Backbone.Validator.testers = (function(){
             }
         },
         
+        // is the value in this list
         in_list: function(value, list, attribute){
             if(_.isArray(list) && _.indexOf(list, value) === -1){
                 return format("{0} is not part of [{1}] for {2}", value, list.join(', '), attribute);
             }
         },
         
+        // is the value a key
         is_key: function(value, obj, attribute){
             if(_.has(obj, value)){
                 return format("{0} is not one of [{1}] for {2}", value, _(obj).keys().join(', '), attribute);
             }
         },
         
+        // does the value come in under a max?
         max_length: function(value, length, attribute){
             if(!_.isUndefined(value.length) && (value.length > length)){
                 return format("{0} is longer than {1} for {2} ", value, length, attribute);
             }
         },
         
+        // does the value meet a minimum requirement
         min_length: function(value, length, attribute){
             if(!_.isUndefined(value.length) && (value.length < length)){
                 return format('{0} is shorter than {1} for {2}', value, length, attribute);
             }
         },
         
+        // does the value equal a default
         to_equal: function(value, example, attribute){
-            if(value !== example){
+            if(!_.isEqual(value, example)){
                 return format("{0} is not the same as {1} for {2}", value, example, attribute);
             }
         },
         
+        // is the value at least a number
         min_value: function(value, limit, attribute){
             if(value < limit){
                 return format("{0} is smaller than {1} for {2}", value, limit, attribute);
             }
         },
         
+        // does the value exceed a number
         max_value: function(value, limit, attribute){
             if(value > limit){
                 return format("{0} exceeds {1} for {2}", value, limit, attribute);

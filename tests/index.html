@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jasmine Spec Runner</title>
+    <link rel="stylesheet" type="text/css" href="lib/jasmine.css">
+    <script src="lib/jasmine.js"></script>
+    <script src="lib/jasmine-html.js"></script>
+    <script src="lib/jquery-1.7.2.min.js"></script>
+    <script src="lib/underscore.js"></script>
+    <script src="lib/backbone.js"></script>
+	<script src="../backbone.validator.js"></script>
+
+    <!-- a simple model -->
+	<script>
+    _.extend(Backbone.Model.prototype, Backbone.Validator);	
+	var TestModel = Backbone.Model.extend({
+	    use_defaults: true,
+	    defaults: {
+	        title: "test title",
+	        highfives: 12,
+	        other: {},
+	        always: true
+	    },
+	    validators: {
+	        title: {
+	            is_type: "string",
+	            max_length: 20,
+	            min_length: 2,
+	        },
+	        highfives: {
+	            range: [0, 13]
+	        },
+	        other: {
+	            is_type: "object",
+                fn: function(value){
+                    if(!_(value).has('testing_rules')){
+                        return false;
+                    }
+                }
+	        },
+	        always: {
+	            to_equal: true
+	        }
+	    },
+	    initialize: function(){
+	        this.on('error', model_error);
+	    }
+	});
+
+    describe("Validator Tests", function(){
+        var my_model;
+        beforeEach(function(){
+           my_model = new TestModel();
+           validation_failed = false; 
+        });
+        
+        describe("Title tests", function(){
+            it("Should be a valid model", function(){
+                expect(_.isUndefined(my_model)).toBeFalsy();
+            });
+
+            it("Shouldn't let me set a long title", function(){
+                my_model.set('title', 'this is a really long title and it will fail');
+                expect(validation_failed).toBeTruthy();
+            });
+
+            it("Shouldn't let me set too short a title", function(){
+                my_model.set('title', 'a');
+                expect(validation_failed).toBeTruthy();
+            });
+
+            it("Shouldn't let me set the title to a non-string", function(){
+                my_model.set('title', false);
+                expect(validation_failed).toBeTruthy();
+            });
+
+            it('Should use defaults when getting bad data', function(){
+                my_model.set('title', false);
+                expect(my_model.get('title')).toBe('test title');
+            });
+
+            it('Should use the previously-known-good value when use_defaults = false', function(){
+                my_model.use_defaults = false;
+                my_model.set('title', 'new title');
+                my_model.set('title', false);
+                expect(my_model.get('title')).toBe('new title');
+            });            
+        });
+        
+        describe('Highfives test', function(){
+            it("Shouldn't let me set a number higher than the bounds of the range", function(){
+                my_model.set('highfives', 14);
+                expect(validation_failed).toBeTruthy();
+            });
+            
+            it("Shouldn't let me set a number lower than the bounds of the range", function(){
+                my_model.set('highfives', -1);
+                expect(validation_failed).toBeTruthy();
+            });
+            
+            it("Should let me set a number equals to the highest bounds", function(){
+                my_model.set('highfives', 13);
+                expect(validation_failed).toBeFalsy();
+            });
+            
+            it("Should let me set a number equal to the lowest bounds", function(){
+                my_model.set('highfives', 0);
+                expect(validation_failed).toBeFalsy();
+            });
+        });
+        
+        describe("Other tests", function(){
+            it("Shouldn't let me set this to an object without a key named 'testing_rules'", function(){
+                my_model.set('other', {foo: 'bar'});
+                expect(validation_failed).toBeTruthy();
+            });
+            
+            it("Should validate when I pass in {testing_rules: true}", function(){
+                my_model.set('other', {testing_rules: true});
+                expect(validation_failed).toBeFalsy();
+            });
+        });
+    });
+
+    var validation_failed = false;
+	var model_error = function(model, errors){
+	    console.log.apply(console, errors);
+        validation_failed = true;
+    };
+    (function() {
+        var jasmineEnv = jasmine.getEnv();
+        jasmineEnv.updateInterval = 1000;
+        var trivialReporter = new jasmine.TrivialReporter();
+        jasmineEnv.addReporter(trivialReporter);
+        jasmineEnv.specFilter = function(spec) {
+            return trivialReporter.specFilter(spec);
+        };
+        var currentWindowOnload = window.onload;
+        window.onload = function() {
+            if (currentWindowOnload) {
+                currentWindowOnload();
+            }
+            execJasmine();
+        };
+        function execJasmine() {
+            jasmineEnv.execute();
+        }
+    })();
+    </script>
+</head>
+<body>
+</body>
+</html>
