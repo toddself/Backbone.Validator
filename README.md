@@ -1,6 +1,7 @@
 # Backbone.Validator
 
 ## Versions
+* 0.92.1 - Added `is_instance` pre-defined validator
 * 0.92.0 - Cleaned up the code a little, removed console.log statements, and changed `to_equal` to use `_.isEqual` for better comparison. Added comments for annotated source code, and started porting in tests from our internal codebase.  Matching latest Backbone version tested against.
 * 0.4.3 - IE doesn't support `Array.prototype.indexOf`, switched to `_.indexOf()`
 * 0.4.1 - The default is now validated and rejected should it not match the validation rules.  This should *hopefully* fix the call stack issues.
@@ -212,6 +213,13 @@ min_value: function(value, limit, attribute){
 max_value: function(value, limit, attribute){
     if(value > limit){
         return format("{0} exceeds {1} for {2}", value, limit, attribute);
+    }
+}
+
+// is an instance of an object
+is_instance: function(value, type){
+    if(!(value instanceof type)){
+        return format("{0} is not an instance of {1}", value, type);
     }
 }
 ```

@@ -13,13 +13,15 @@
     <!-- a simple model -->
 	<script>
     _.extend(Backbone.Model.prototype, Backbone.Validator);	
+    var inner = Backbone.Model.extend();
 	var TestModel = Backbone.Model.extend({
 	    use_defaults: true,
 	    defaults: {
 	        title: "test title",
 	        highfives: 12,
 	        other: {},
-	        always: true
+	        always: true,
+	        must_be_inner: null
 	    },
 	    validators: {
 	        title: {
@@ -40,6 +42,9 @@
 	        },
 	        always: {
 	            to_equal: true
+	        },
+	        must_be_inner: {
+	            is_instance: inner
 	        }
 	    },
 	    initialize: function(){
@@ -109,17 +114,31 @@
             });
         });
         
-        describe("Other tests", function(){
-            it("Shouldn't let me set this to an object without a key named 'testing_rules'", function(){
-                my_model.set('other', {foo: 'bar'});
+        // describe("Other tests", function(){
+        //     it("Shouldn't let me set this to an object without a key named 'testing_rules'", function(){
+        //         my_model.set('other', {foo: 'bar'});
+        //         expect(validation_failed).toBeTruthy();
+        //     });
+        //     
+        //     it("Should validate when I pass in {testing_rules: true}", function(){
+        //         my_model.set('other', {testing_rules: true});
+        //         expect(validation_failed).toBeFalsy();
+        //     });
+        // });
+        
+        describe("Instance tests", function(){
+            it("Shouldn't let me set instance to anything that isn't an instance of inner", function(){
+                my_model.use_defaults = false;
+                my_model.set('must_be_inner', true);
                 expect(validation_failed).toBeTruthy();
             });
             
-            it("Should validate when I pass in {testing_rules: true}", function(){
-                my_model.set('other', {testing_rules: true});
-                expect(validation_failed).toBeFalsy();
+            it("Should let me se instance to an instance of inner", function(){
+                my_model.use_defaults = false;
+                my_model.set('must_be_inner', new inner());
+                expect(validation_failed).toBeFalsy()
             });
-        });
+        })
     });
 
     var validation_failed = false;

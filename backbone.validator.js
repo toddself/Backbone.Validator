@@ -192,6 +192,12 @@ Backbone.Validator.testers = (function(){
             if(value > limit){
                 return format("{0} exceeds {1} for {2}", value, limit, attribute);
             }
+        },
+        
+        is_instance: function(value, type){
+            if(!(value instanceof type)){
+                return format("{0} is not an instance of {1}", value, type);
+            }
         }
     };
 }());
