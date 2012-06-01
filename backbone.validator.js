@@ -194,6 +194,7 @@ Backbone.Validator.testers = (function(){
             }
         },
         
+        // is this an instance of a particular object
         is_instance: function(value, type){
             if(!(value instanceof type)){
                 return format("{0} is not an instance of {1}", value, type);
