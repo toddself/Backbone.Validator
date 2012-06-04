@@ -161,14 +161,14 @@ Backbone.Validator.testers = (function(){
         
         // does the value come in under a max?
         max_length: function(value, length, attribute){
-            if(!_.isUndefined(value.length) && (value.length > length)){
+            if(!_.isNull(value) && !_.isUndefined(value) && _.has(value, "length") && !_.isUndefined(value.length) && (value.length > length)){
                 return format("{0} is longer than {1} for {2} ", value, length, attribute);
             }
         },
         
         // does the value meet a minimum requirement
         min_length: function(value, length, attribute){
-            if(!_.isUndefined(value.length) && (value.length < length)){
+            if(!_.isNull(value) && !_.isUndefined(value) && _.has(value, "length") && !_.isUndefined(value.length) && (value.length < length)){
                 return format('{0} is shorter than {1} for {2}', value, length, attribute);
             }
         },
