@@ -78,7 +78,7 @@ Backbone.Validator = (function(){
         use_defaults: false,
 
         validate: function(attrs, options) {
-            var errors;
+            var errors = {};
             var model = this;
             var changedAttributes = get_changed_attributes(model.previousAttributes(), attrs);
             if(_.isObject(model.validators)){
@@ -86,8 +86,11 @@ Backbone.Validator = (function(){
                 _(changedAttributes).each(function(attr){
                     if(_.isObject(model.validators[attr])){
                         var model_validators = get_validators(model, attr);
-                        errors = run_validators(attrs[attr], model_validators, attr);
-                        if(errors.length > 0){
+                        error = run_validators(attrs[attr], model_validators, attr);
+                        if(error){
+                            errors[attr] = error;
+                        }
+                        if(errors[attr]){
                             if(model.use_defaults || attrs.use_defaults){
                                 set_default(model, attr, errors, model_validators);
                             }
@@ -95,7 +98,7 @@ Backbone.Validator = (function(){
                     }
                 });
             }
-            if(_.isArray(errors) && errors.length > 0){
+            if(!_.isEmpty(errors)){
                 return errors;
             }
         }
