@@ -87,7 +87,7 @@ Backbone.Validator = (function(){
                     if(_.isObject(model.validators[attr])){
                         var model_validators = get_validators(model, attr);
                         error = run_validators(attrs[attr], model_validators, attr);
-                        if(error){
+                        if(!_.isEmpty(error)){
                             errors[attr] = error;
                         }
                         if(errors[attr]){
