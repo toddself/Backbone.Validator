@@ -143,7 +143,7 @@ Backbone.Validator.testers = (function(){
         // does it match the given regex
         regex: function(value, re, attribute){
             var regex = new RegExp(re);
-            if(regex.test(value)){
+            if(!regex.test(value)){
                 return format("{0} did not match pattern {1} for {2}", value, regex.toString(), attribute);
             }
         },
