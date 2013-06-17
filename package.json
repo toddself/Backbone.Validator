@@ -1,0 +1,26 @@
+{
+  "name": "Backbone.Validator",
+  "description": "Validation plugin with defaults for Backbone",
+  "version": "0.9.2",
+  "author": "Todd Kennedy <todd.kennedy@gmail.com>",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/bower/bower/blob/master/LICENSE"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/toddself/Backbone.Validator"
+  },
+  "main": "backbone.validator.js",
+  "homepage": "http://toddself.github.io/Backbone.Validator",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.4.3",
+    "grunt-mocha": "~0.3.1",
+    "grunt-jsvalidate": "~0.2.1",
+    "chai": "~1.6.0"
+  },
+  "preferGlobal": true
+}
