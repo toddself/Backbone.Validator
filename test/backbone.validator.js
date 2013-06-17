@@ -10,6 +10,9 @@
         var TestModel;
         var validation_failed;
         var model_error = function(model, errors){
+            if(!window.PHANTOMJS){
+                console.log.apply(console, errors);
+            }
             validation_failed = true;
         };
 

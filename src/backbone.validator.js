@@ -63,7 +63,7 @@
 
 
     var Validator = {
-        use_defaults: false;
+        use_defaults: false,
 
         validate: function(attrs, options) {
             var errors = {};
@@ -93,7 +93,7 @@
                 return errors;
             }
         }
-    }
+    };
 
     // attach the validator functions to the backbone object for easy reference
     root.Backbone.Validator = Validator;
