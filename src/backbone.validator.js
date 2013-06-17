@@ -1,14 +1,17 @@
-// Backbone.Validator v0.92
+// Backbone.Validator v1.0.0
 //
-// Copyright (C) 2012 Broadcastr
-// Author: Todd Kennedy <todd@broadcastr.com>
+// Copyright (C) 2012, 2013 Broadcastr
+// Author: Todd Kennedy <todd.kennedy@gmail.com>
 // Distributed under MIT License
 //
 // Documentation and full license available at:
 // http://toddself.github.com/backbone.validator
 
-Backbone.Validator = (function(){
+(function(){
     'use strict';
+
+    var root = this;
+
     var get_validators = function(model, attr){
         // we want to gather all the validators that are present for this attribute
         var validators = [], v;
@@ -58,31 +61,17 @@ Backbone.Validator = (function(){
         return errors;
     };
 
-    // we only want to bother with attributes that have changed so we don't
-    // revalidate valid data OR invalidate data that was passed in during
-    // instantiation to get around model validation.  that sounds dumb, but
-    // it might be necessary
-    var get_changed_attributes = function(previous, current){
-        var changedAttributes = [];
-        _(current).each(function(val, key){
-            if(!_(previous).has(key)){
-                changedAttributes.push(key);
-            } else if (!_.isEqual(val, previous[key])){
-                changedAttributes.push(key);
-            }
-        });
-        return changedAttributes;
-    };
 
-    return {
-        // extend the model with these values.
-        use_defaults: false,
+    var Validator = {
+        use_defaults: false;
 
         validate: function(attrs, options) {
             var errors = {};
             var error;
             var model = this;
-            var changedAttributes = get_changed_attributes(model.previousAttributes(), attrs);
+
+            var changedAttributes = model.changedAttributes();
+
             if(_.isObject(model.validators)){
                 // for each attribute changed...
                 _(changedAttributes).each(function(attr){
@@ -104,11 +93,10 @@ Backbone.Validator = (function(){
                 return errors;
             }
         }
-    };
-}());
+    }
 
-Backbone.Validator.testers = (function(){
-    'use strict';
+    // attach the validator functions to the backbone object for easy reference
+    root.Backbone.Validator = Validator;
 
     // borrowed from https://github.com/thedersen/backbone.validation
     var format = function() {
@@ -119,7 +107,7 @@ Backbone.Validator.testers = (function(){
         });
     };
 
-    return {
+    var Testers =  {
         // is the value in a given range
         range: function(value, range, attribute){
             if(_.isArray(range) && range.length === 2){
@@ -128,6 +116,7 @@ Backbone.Validator.testers = (function(){
                 }
             }
         },
+
         // if type is date we'll do something different.
         // also, (Since `_.isDate` returns true for invalid dates)[https://github.com/documentcloud/underscore/pull/489] means we're not going to use _.isDate
         is_type: function(value, type, attribute){
@@ -213,4 +202,7 @@ Backbone.Validator.testers = (function(){
             }
         }
     };
-}());
+
+    root.Backbone.Validator.Testers = Testers;
+
+}).call(this);
