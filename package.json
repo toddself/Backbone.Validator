@@ -9,6 +9,9 @@
       "url": "https://github.com/bower/bower/blob/master/LICENSE"
     }
   ],
+  "scripts": {
+    "test": "grunt mocha"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/toddself/Backbone.Validator"
