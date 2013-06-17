@@ -1,3 +1,5 @@
+/* global define, beforeEach, describe, sinon, it, chai, afterEach */
+
 (function(){
     'use strict';
 
@@ -121,6 +123,6 @@
                 my_model.set('must_be_inner', new Inner());
                 chai.expect(validation_failed).to.equal(false);
             });
-        })
+        });
     });
 })();
