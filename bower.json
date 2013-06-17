@@ -1,13 +1,13 @@
 {
   "name": "Backbone.Validator",
-  "version": "0.9.2",
+  "version": "1.0.0",
   "main": "src/backbone.validator.js",
   "ignore": [
     "node_modules",
     "components"
   ],
   "dependencies": {
-    "backbone": "0.9.2",
+    "backbone": "1.0.0",
     "underscore": "~1.4.4"
   },
   "devDependencies": {
