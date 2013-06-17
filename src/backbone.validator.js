@@ -8,6 +8,7 @@
 // http://toddself.github.com/backbone.validator
 
 Backbone.Validator = (function(){
+    'use strict';
     var get_validators = function(model, attr){
         // we want to gather all the validators that are present for this attribute
         var validators = [], v;
@@ -79,6 +80,7 @@ Backbone.Validator = (function(){
 
         validate: function(attrs, options) {
             var errors = {};
+            var error;
             var model = this;
             var changedAttributes = get_changed_attributes(model.previousAttributes(), attrs);
             if(_.isObject(model.validators)){
@@ -106,6 +108,7 @@ Backbone.Validator = (function(){
 }());
 
 Backbone.Validator.testers = (function(){
+    'use strict';
 
     // borrowed from https://github.com/thedersen/backbone.validation
     var format = function() {
