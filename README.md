@@ -1,4 +1,5 @@
 # Backbone.Validator
+[![Build Status](https://travis-ci.org/toddself/Backbone.Validator.png?branch=update_backbone_1.0)](https://travis-ci.org/toddself/Backbone.Validator)
 
 ## Versions
 * 0.92.1 - Added `is_instance` pre-defined validator
