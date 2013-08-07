@@ -8,7 +8,7 @@ module.exports = function (grunt) {
       },
       all: [
           'Gruntfile.js',
-          'src/**/*.js',
+          'backbone.validator.js',
           'test/**/*.js'
       ]
     },

@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/toddself/Backbone.Validator.png?branch=update_backbone_1.0)](https://travis-ci.org/toddself/Backbone.Validator)
 
 ## Versions
+* 1.0.0 - General code clean up, allow for use via commonJS, requireJS, no module system, working with Backbone 1.0
 * 0.92.1 - Added `is_instance` pre-defined validator
 * 0.92.0 - Cleaned up the code a little, removed console.log statements, and changed `to_equal` to use `_.isEqual` for better comparison. Added comments for annotated source code, and started porting in tests from our internal codebase.  Matching latest Backbone version tested against.
 * 0.4.3 - IE doesn't support `Array.prototype.indexOf`, switched to `_.indexOf()`
@@ -12,13 +13,37 @@
 * 0.2.0 - Initial release
 
 ## Backbone Version
-This plug-in is only tested with Backbone 0.9.1.  You'll also need to make sure you're on Underscore 1.3.1.  Not that it won't work with older versions, but there's no guarantees.
+The version of this plugin you should use should match the version of Backbone that you're using, following [Semver](http://semver.org) rules. Underscore will need to be the minimum version required for that version of Backbone.
 
 ## Setup
-This is designed to be used as a mixin with the `Backbone.Model` class prior to defining your models.
+This is designed to be mixed in with your model definitions when you call `Backbone.Model.extend`:
 
-    _.extend(Backbone.Model.prototype, Backbone.Validator);
-    
+```javascript
+
+var Validator
+if(typeof require === 'function'){
+    Validator = require('backbonevalidator');
+} else {
+    Validator = window.BackboneValidator;
+}
+
+var PrimateModel = Backbone.Model.extend(Validator, {
+    use_defaults: true,
+    defaults: {
+        type: "Gorilla",
+        name: "Magilla"
+    },
+    validators: {
+        type: {
+            in_list: ['Gorilla', 'Human', 'Monkey']
+        },
+        name: {
+            is_type: 'string'
+        }
+    }
+});
+```
+
 By default, `use_defaults` is set to `false`.  When you're creating your model, you can override the default setting should you want Backbone.Validator to apply the value from the `defaults` object attached to the model (should there be one).
 
 ## Defining Validators
@@ -45,8 +70,8 @@ test_model.set({title: false});
 test_model.get('title');
 "I am a title!"
 ```
-   
-   
+
+
 ## Catching errors
 You can catch errors and do something with them by attaching a listener to the `error` event which is triggered when the validation fails.
 
@@ -67,9 +92,9 @@ test_model.get('title');
 test_model.set({title: false});
 "The title has to be a valid string"
 test_model.get('title');
-"I am a title!" 
+"I am a title!"
 ```
-    
+
 ## Defaults
 You can have the validation framework substitute a reasonable default for an invalid option.  This is useful when bootstrapping the model from an untrusted source.
 
@@ -109,10 +134,10 @@ t.get('title');
 t.set({title: false});
 "Expected false to be of type string"
 t.get('title');
-"this is a new title"    
+"this is a new title"
 t.set({title: 'this title is way too long to be set and it should not get set because it is way too long and like if it gets set it will suck because this is way too long'});
 "Attribute value was longer than 40 characters"
-t.get('title');    
+t.get('title');
 "this is a new title"
 ```
 
@@ -156,8 +181,8 @@ is_type: function(value, type, attribute){
         if(typeof(value) !== type){
             return format("Expected {0} to be of type {1} for {2} ", value, type, attribute);
         }
-        
-    }            
+
+    }
 },
 
 // Does it pass a regular expression test
@@ -203,7 +228,7 @@ to_equal: function(value, example, attribute){
     }
 },
 
-// unbounded top 
+// unbounded top
 min_value: function(value, limit, attribute){
     if(value < limit){
         return format("{0} is smaller than {1} for {2}", value, limit, attribute);

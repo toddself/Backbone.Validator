@@ -1,4 +1,4 @@
-// Backbone.Validator v1.0.0
+// Backbone.Validator
 //
 // Copyright (C) 2012, 2013 Broadcastr
 // Author: Todd Kennedy <todd.kennedy@gmail.com>
@@ -10,21 +10,36 @@
 (function(){
     'use strict';
 
-    var root = this;
+    var global = this;
 
+    // We need both of these libraries
+    var Backbone = global.Backbone;
+    if(!Backbone && (typeof require !== 'undefined')){
+        Backbone = require('backbone');
+    }
+    if(!_ && (typeof require !== 'undefined')){
+        _ = require('underscore');
+    }
+
+    /**
+     * Returns an array of the validator functions for the given attributes
+     * @method get_validators
+     * @private
+     * @param  {Object} model The model object
+     * @param  {String} attr  The attribute to get the validators for
+     * @return {Array}        An array of functions
+     */
     var get_validators = function(model, attr){
-        // we want to gather all the validators that are present for this attribute
-        var validators = [], v;
-        _(model.validators[attr]).each(function(val, key){
-            // custom functions just get pushed into the validators list
+        var validators = [];
+
+        _.each(model.validators[attr], function(val, key){
+            var validator;
             if(key === 'fn'){
-                v = {fn: model.validators[attr].fn, opt: null};
-                validators.push(v);
+                validators.push({fn: model.validators[attr].fn, arg: null});
             } else {
-                // and we'll see if the other validators are preset
                 if(key in Backbone.Validator.testers){
-                    v = {fn: Backbone.Validator.testers[key], opt: model.validators[attr][key]};
-                    validators.push(v);
+                    validators.push({fn: Backbone.Validator.testers[key],
+                                     arg: model.validators[attr][key]});
                 }
             }
 
@@ -32,24 +47,46 @@
         return validators;
     };
 
+    /**
+     * Runs the list of validators on the data to verify it can be set
+     *
+     * @method run_validators
+     * @private
+     * @param  {Mixed} value      The value you're trying to set
+     * @param  {Array} validators The validators for the attribute
+     * @param  {String} attribute  The name of the attributes
+     * @return {Array}            A list of all the errors returned from the validators
+     */
     var run_validators = function(value, validators, attribute){
         // call each validator in the order in which it was attached to the attribute
         // should an error be returned, we'll capture it and store it
         var errors = [];
-        _(validators).each(function(validator){
-            var result = validator.fn.call(this, value, validator.opt, attribute);
-            if(!_.isUndefined(result)){
+        _.each(validators, function(validator){
+            var result = validator.fn.call(this, value, validator.arg, attribute);
+            if(result){
                 errors.push(result);
             }
         });
         return errors;
     };
 
+    /**
+     * Sets the attribute to a given default if the validation failed on setting
+     * the new value for the attribute
+     *
+     * @method  set_default
+     * @private
+     * @param {Object} model    The model you wish to set the default on
+     * @param {String} attr     The key you wish to set
+     * @param {Object} errors   An object containing all the current errors so a
+     *                          error can still be triggered to let you know
+     *                          the default was set
+     * @param {Array} model_validators The object containing all the validators for
+     *                                      the given attribute
+     * @return {Object} The errors object returned
+     */
     var set_default = function(model, attr, errors, model_validators){
-        // if the validation fails and the user wants to use the default that's been defined
-        // we'll do that here.  We have to set {silent: true} to prevent a recursive call
-        // from being made.
-        if(_.isObject(model.defaults) && (attr in model.defaults)){
+        if(model.defaults && (attr in model.defaults)){
             var default_errors = run_validators(model.defaults[attr], model_validators, attr);
             if(default_errors.length < 1){
                 model.attributes[attr] = model.defaults[attr];
@@ -61,44 +98,56 @@
         return errors;
     };
 
-
     var Validator = {
         use_defaults: false,
 
-        validate: function(attrs, options) {
+        /**
+         * Implementation of Backbone.Model.validate signature
+         * @param  {Object} new_attributes The attributes given to `.set`
+         * @param  {Object} options        Any options passed into `.set`
+         * @return {Mixed}                 `undefined` if everything is kosher
+         *                                 `array` of `string`s if not
+         */
+        validate: function(new_attributes, options) {
             var errors = {};
-            var error;
+            var fail = false;
             var model = this;
 
             var changedAttributes = model.changedAttributes();
 
-            if(_.isObject(model.validators)){
-                // for each attribute changed...
-                _(changedAttributes).each(function(attr){
-                    if(_.isObject(model.validators[attr])){
+            if(model.validators){
+                _.each(changedAttributes, function(attr){
+                    if(model.validators[attr]){
                         var model_validators = get_validators(model, attr);
-                        error = run_validators(attrs[attr], model_validators, attr);
-                        if(!_.isEmpty(error)){
-                            errors[attr] = error;
-                        }
-                        if(errors[attr]){
-                            if(model.use_defaults || attrs.use_defaults){
+
+                        var attr_errors = run_validators(new_attributes[attr],
+                                                         model_validators,
+                                                         attr);
+
+                        if(attr_errors.length){
+                            errors[attr] = attr_errors;
+                            fail = true;
+                            if(model.use_defaults || options.use_defaults){
                                 set_default(model, attr, errors, model_validators);
                             }
                         }
                     }
                 });
-            }
-            if(!_.isEmpty(errors)){
-                return errors;
+                if(fail){
+                    return errors;
+                }
             }
         }
     };
 
-    // attach the validator functions to the backbone object for easy reference
-    root.Backbone.Validator = Validator;
 
-    // borrowed from https://github.com/thedersen/backbone.validation
+    /**
+     * Formats a string for easier display.
+     * borrowed from https://github.com/thedersen/backbone.validation
+     * @method format
+     * @private
+     * @return {String} The composited string
+     */
     var format = function() {
         var args = Array.prototype.slice.call(arguments);
         var text = args.shift();
@@ -203,6 +252,14 @@
         }
     };
 
-    root.Backbone.Validator.Testers = Testers;
+    if(typeof exports !== 'undefined'){
+        module.exports = Validator;
+    } else if (typeof define === 'function' && define.amd ){
+        define(function(){
+            return Validator;
+        });
+    } else {
+        global.BackboneValidator = Validator;
+    }
 
 }).call(this);
