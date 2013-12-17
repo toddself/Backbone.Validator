@@ -1,7 +1,7 @@
 {
-  "name": "Backbone.Validator",
+  "name": "backbone.validator",
   "description": "Validation plugin for Backbone allowing for setting of default values",
-  "version": "0.0.0",
+  "version": "1.1.0",
   "repository": {
     "url": "git://github.com/toddself/Backbone.Validator.git"
   },
@@ -24,7 +24,7 @@
     "email": "<todd@selfassembled.org>",
     "url": "http://tck.io"
   },
-  "keywords": [],
+  "keywords": ["backbone", "models", "validation", "validator", "validity", "underscore", "plugin"],
   "license": {
     "type": "MIT",
     "url": "https://github.com/toddself/Backbone.Validator/blog/master/LICENSE"
