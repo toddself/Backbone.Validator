@@ -1,7 +1,10 @@
 # Backbone.Validator
-[![Build Status](https://travis-ci.org/toddself/Backbone.Validator.png?branch=master)](https://travis-ci.org/toddself/Backbone.Validator)
+[![Build Status](https://travis-ci.org/toddself/Backbone.Validator.png)](https://travis-ci.org/toddself/Backbone.Validator)
+
+[![browser support](https://ci.testling.com/toddself/Backbone.Validator.png)](https://ci.testling.com/toddself/Backbone.Validator)
 
 ## Versions
+* 1.1.0 - **breaking changes** General code clean up, allow for use via commonJS, requireJS, no module system, working with Backbone 1.0+, renamed methods and variables to camel case for JS consistancy.
 * 0.92.1 - Added `is_instance` pre-defined validator
 * 0.92.0 - Cleaned up the code a little, removed console.log statements, and changed `to_equal` to use `_.isEqual` for better comparison. Added comments for annotated source code, and started porting in tests from our internal codebase.  Matching latest Backbone version tested against.
 * 0.4.3 - IE doesn't support `Array.prototype.indexOf`, switched to `_.indexOf()`
@@ -12,14 +15,34 @@
 * 0.2.0 - Initial release
 
 ## Backbone Version
-This plug-in is only tested with Backbone 0.9.1.  You'll also need to make sure you're on Underscore 1.3.1.  Not that it won't work with older versions, but there's no guarantees.
+The version of this plugin you should use should match the version of Backbone that you're using, following [Semver](http://semver.org) rules. Underscore will need to be the minimum version required for that version of Backbone.
 
 ## Setup
-This is designed to be used as a mixin with the `Backbone.Model` class prior to defining your models.
+Override the `prototype.validate` for your created model with the package.
 
-    _.extend(Backbone.Model.prototype, Backbone.Validator);
-    
-By default, `use_defaults` is set to `false`.  When you're creating your model, you can override the default setting should you want Backbone.Validator to apply the value from the `defaults` object attached to the model (should there be one).
+```javascript
+var PrimateModel = Backbone.Model.extend({
+    useDefaults: true,
+    defaults: {
+        type: "Gorilla",
+        name: "Magilla"
+    },
+    validators: {
+        type: {
+            inList: ['Gorilla', 'Human', 'Monkey']
+        },
+        name: {
+            isType: 'string'
+        }
+    }
+});
+
+PrimateModel.prototype.validate = require('backbone.validator');
+```
+
+If you want the system to substitute your defaults, set `useDefaults` on your model defintion to true, or pass in `{useDefaults: true}` to your options hash when `set`ting or `save`-ing a model.
+
+**Remember:** if you want to validate on `set`, you need to also include `{validate: true}`
 
 ## Defining Validators
 Validators are defined in the `validator` object as part of the model setup.  If the value passed in doesn't meet your criteria for a valid value, return any value.  If it does match your criteria, return nothing (`undefined`).  You may attach multiple validators to each attribute -- they will be run in the order in which they are attached.  If one of them fails, the entire validation will fail and `error` will be triggered.
@@ -45,18 +68,20 @@ test_model.set({title: false});
 test_model.get('title');
 "I am a title!"
 ```
-   
-   
+
+
 ## Catching errors
-You can catch errors and do something with them by attaching a listener to the `error` event which is triggered when the validation fails.
+You can catch errors and do something with them by attaching a listener to the `invalid` event which is triggered when the validation fails.
 
 ```javascript
 TestModel.extend({
     initialize: function(){
-        this.on('error', this.display_error);
+        this.on('invalid', this.displayError);
     },
-    display_error: function(model, error){
-        console.log(error);
+    displayError: function(errors){
+        errors.forEach(function(error){
+            console.log(errors.attr, errors.error);
+        });
     }
 });
 
@@ -67,15 +92,15 @@ test_model.get('title');
 test_model.set({title: false});
 "The title has to be a valid string"
 test_model.get('title');
-"I am a title!" 
+"I am a title!"
 ```
-    
+
 ## Defaults
 You can have the validation framework substitute a reasonable default for an invalid option.  This is useful when bootstrapping the model from an untrusted source.
 
 ```javascript
 TestModel.extend({
-    use_defaults: true,
+    useDefaults: true,
     defaults: {
         title: "BAD TITLE"
     }
@@ -91,139 +116,526 @@ test_model.get('title');
 "BAD TITLE"
 ```
 
-## Pre-Defined Validators
-Pre-Defined validators can be added to the list of validators for a given attribute.
+## Built-in tests
 
-```javascript
-TestModel.validators.extend({
-    title: {
-        is_type: 'string',
-        max_length: 40
-    }
-});
+<!-- START docme generated API please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN docme TO UPDATE -->
 
-var t = new TestModel();
-t.set({title: 'this is a new title'});
-t.get('title');
-"this is a new title"
-t.set({title: false});
-"Expected false to be of type string"
-t.get('title');
-"this is a new title"    
-t.set({title: 'this title is way too long to be set and it should not get set because it is way too long and like if it gets set it will suck because this is way too long'});
-"Attribute value was longer than 40 characters"
-t.get('title');    
-"this is a new title"
-```
+<div class="jsdoc-githubify">
+<section>
+<article>
+<div class="container-overview">
+<dl class="details">
+</dl>
+</div>
+<dl>
+<dt>
+<h4 class="name" id="inList"><span class="type-signature"></span>inList<span class="signature">(value, list, attribute)</span><span class="type-signature"> &rarr; {string}</span></h4>
+</dt>
+<dd>
+<div class="description">
+<p>Tests if a value is a member of a given array</p>
+</div>
+<h5>Parameters:</h5>
+<table class="params">
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th class="last">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="name"><code>value</code></td>
+<td class="type">
+<span class="param-type">mixed</span>
+</td>
+<td class="description last"><p>value to test</p></td>
+</tr>
+<tr>
+<td class="name"><code>list</code></td>
+<td class="type">
+<span class="param-type">array</span>
+</td>
+<td class="description last"><p>the list of acceptable values</p></td>
+</tr>
+<tr>
+<td class="name"><code>attribute</code></td>
+<td class="type">
+<span class="param-type">string</span>
+</td>
+<td class="description last"><p>the name of the model attribute</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="details">
+<dt class="tag-source">Source:</dt>
+<dd class="tag-source"><ul class="dummy">
+<li>
+<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js">backbone.validator.js</a>
+<span>, </span>
+<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js#L222">lineno 222</a>
+</li>
+</ul></dd>
+</dl>
+<h5>Returns:</h5>
+<div class="param-desc">
+<p>error message, if any</p>
+</div>
+<dl>
+<dt>
+Type
+</dt>
+<dd>
+<span class="param-type">string</span>
+</dd>
+</dl>
+</dd>
+<dt>
+<h4 class="name" id="isKey"><span class="type-signature"></span>isKey<span class="signature">(value, obj, attribute)</span><span class="type-signature"> &rarr; {string}</span></h4>
+</dt>
+<dd>
+<div class="description">
+<p>Tests to see if the value is the key on an object</p>
+</div>
+<h5>Parameters:</h5>
+<table class="params">
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th class="last">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="name"><code>value</code></td>
+<td class="type">
+<span class="param-type">string</span>
+</td>
+<td class="description last"><p>the value to test</p></td>
+</tr>
+<tr>
+<td class="name"><code>obj</code></td>
+<td class="type">
+<span class="param-type">object</span>
+</td>
+<td class="description last"><p>the object to test for keys</p></td>
+</tr>
+<tr>
+<td class="name"><code>attribute</code></td>
+<td class="type">
+<span class="param-type">string</span>
+</td>
+<td class="description last"><p>the name of the model attribute</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="details">
+<dt class="tag-source">Source:</dt>
+<dd class="tag-source"><ul class="dummy">
+<li>
+<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js">backbone.validator.js</a>
+<span>, </span>
+<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js#L236">lineno 236</a>
+</li>
+</ul></dd>
+</dl>
+<h5>Returns:</h5>
+<div class="param-desc">
+<p>error message, if any</p>
+</div>
+<dl>
+<dt>
+Type
+</dt>
+<dd>
+<span class="param-type">string</span>
+</dd>
+</dl>
+</dd>
+<dt>
+<h4 class="name" id="maxLength"><span class="type-signature"></span>maxLength<span class="signature">(value, length, attribute)</span><span class="type-signature"> &rarr; {string}</span></h4>
+</dt>
+<dd>
+<div class="description">
+<p>Tests to see if the value is under a max length</p>
+</div>
+<h5>Parameters:</h5>
+<table class="params">
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th class="last">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="name"><code>value</code></td>
+<td class="type">
+<span class="param-type">mixed</span>
+</td>
+<td class="description last"><p>the value to test: string or array</p></td>
+</tr>
+<tr>
+<td class="name"><code>length</code></td>
+<td class="type">
+<span class="param-type">number</span>
+</td>
+<td class="description last"><p>the maximum length for value</p></td>
+</tr>
+<tr>
+<td class="name"><code>attribute</code></td>
+<td class="type">
+<span class="param-type">string</span>
+</td>
+<td class="description last"><p>the name of the model attribute</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="details">
+<dt class="tag-source">Source:</dt>
+<dd class="tag-source"><ul class="dummy">
+<li>
+<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js">backbone.validator.js</a>
+<span>, </span>
+<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js#L250">lineno 250</a>
+</li>
+</ul></dd>
+</dl>
+<h5>Returns:</h5>
+<div class="param-desc">
+<p>error message, if any</p>
+</div>
+<dl>
+<dt>
+Type
+</dt>
+<dd>
+<span class="param-type">string</span>
+</dd>
+</dl>
+</dd>
+<dt>
+<h4 class="name" id="maxValue"><span class="type-signature"></span>maxValue<span class="signature">(value, limit, attribute)</span><span class="type-signature"> &rarr; {string}</span></h4>
+</dt>
+<dd>
+<div class="description">
+<p>Test a number fo make sure it's lower than a specified value</p>
+</div>
+<h5>Parameters:</h5>
+<table class="params">
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th class="last">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="name"><code>value</code></td>
+<td class="type">
+<span class="param-type">number</span>
+</td>
+<td class="description last"><p>the number to test</p></td>
+</tr>
+<tr>
+<td class="name"><code>limit</code></td>
+<td class="type">
+<span class="param-type">number</span>
+</td>
+<td class="description last"><p>the maximum value for this number</p></td>
+</tr>
+<tr>
+<td class="name"><code>attribute</code></td>
+<td class="type">
+<span class="param-type">string</span>
+</td>
+<td class="description last"><p>the name of the model attribute</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="details">
+<dt class="tag-source">Source:</dt>
+<dd class="tag-source"><ul class="dummy">
+<li>
+<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js">backbone.validator.js</a>
+<span>, </span>
+<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js#L310">lineno 310</a>
+</li>
+</ul></dd>
+</dl>
+<h5>Returns:</h5>
+<div class="param-desc">
+<p>error message, if any</p>
+</div>
+<dl>
+<dt>
+Type
+</dt>
+<dd>
+<span class="param-type">string</span>
+</dd>
+</dl>
+</dd>
+<dt>
+<h4 class="name" id="minLength"><span class="type-signature"></span>minLength<span class="signature">(value, length, attribute)</span><span class="type-signature"> &rarr; {string}</span></h4>
+</dt>
+<dd>
+<div class="description">
+<p>Test to see if the value is over a min length</p>
+</div>
+<h5>Parameters:</h5>
+<table class="params">
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th class="last">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="name"><code>value</code></td>
+<td class="type">
+<span class="param-type">mixed</span>
+</td>
+<td class="description last"><p>the value to test: string or array</p></td>
+</tr>
+<tr>
+<td class="name"><code>length</code></td>
+<td class="type">
+<span class="param-type">number</span>
+</td>
+<td class="description last"><p>the minumum value for length</p></td>
+</tr>
+<tr>
+<td class="name"><code>attribute</code></td>
+<td class="type">
+<span class="param-type">string</span>
+</td>
+<td class="description last"><p>the name of the model attribute</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="details">
+<dt class="tag-source">Source:</dt>
+<dd class="tag-source"><ul class="dummy">
+<li>
+<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js">backbone.validator.js</a>
+<span>, </span>
+<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js#L266">lineno 266</a>
+</li>
+</ul></dd>
+</dl>
+<h5>Returns:</h5>
+<div class="param-desc">
+<p>error message, if any</p>
+</div>
+<dl>
+<dt>
+Type
+</dt>
+<dd>
+<span class="param-type">string</span>
+</dd>
+</dl>
+</dd>
+<dt>
+<h4 class="name" id="minValue"><span class="type-signature"></span>minValue<span class="signature">(value, limit, attribute)</span><span class="type-signature"> &rarr; {string}</span></h4>
+</dt>
+<dd>
+<div class="description">
+<p>Tests a number to make sure it's at least a specified value or higher</p>
+</div>
+<h5>Parameters:</h5>
+<table class="params">
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th class="last">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="name"><code>value</code></td>
+<td class="type">
+<span class="param-type">number</span>
+</td>
+<td class="description last"><p>the number to test</p></td>
+</tr>
+<tr>
+<td class="name"><code>limit</code></td>
+<td class="type">
+<span class="param-type">number</span>
+</td>
+<td class="description last"><p>the minimum value</p></td>
+</tr>
+<tr>
+<td class="name"><code>attribute</code></td>
+<td class="type">
+<span class="param-type">string</span>
+</td>
+<td class="description last"><p>the name of the model attribute</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="details">
+<dt class="tag-source">Source:</dt>
+<dd class="tag-source"><ul class="dummy">
+<li>
+<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js">backbone.validator.js</a>
+<span>, </span>
+<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js#L296">lineno 296</a>
+</li>
+</ul></dd>
+</dl>
+<h5>Returns:</h5>
+<div class="param-desc">
+<p>error message, if any</p>
+</div>
+<dl>
+<dt>
+Type
+</dt>
+<dd>
+<span class="param-type">string</span>
+</dd>
+</dl>
+</dd>
+<dt>
+<h4 class="name" id="toEqual"><span class="type-signature"></span>toEqual<span class="signature">(value, example, attribute)</span><span class="type-signature"> &rarr; {string}</span></h4>
+</dt>
+<dd>
+<div class="description">
+<p>Test to see if two values are shallow equal</p>
+</div>
+<h5>Parameters:</h5>
+<table class="params">
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th class="last">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="name"><code>value</code></td>
+<td class="type">
+<span class="param-type">mixed</span>
+</td>
+<td class="description last"><p>the value to test</p></td>
+</tr>
+<tr>
+<td class="name"><code>example</code></td>
+<td class="type">
+<span class="param-type">mixed</span>
+</td>
+<td class="description last"><p>the desired value</p></td>
+</tr>
+<tr>
+<td class="name"><code>attribute</code></td>
+<td class="type">
+<span class="param-type">string</span>
+</td>
+<td class="description last"><p>the name of the model attribute</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="details">
+<dt class="tag-source">Source:</dt>
+<dd class="tag-source"><ul class="dummy">
+<li>
+<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js">backbone.validator.js</a>
+<span>, </span>
+<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js#L282">lineno 282</a>
+</li>
+</ul></dd>
+</dl>
+<h5>Returns:</h5>
+<div class="param-desc">
+<p>error message, if any</p>
+</div>
+<dl>
+<dt>
+Type
+</dt>
+<dd>
+<span class="param-type">string</span>
+</dd>
+</dl>
+</dd>
+<dt>
+<h4 class="name" id="Validate"><span class="type-signature"></span>Validate<span class="signature">(attributes, options)</span><span class="type-signature"> &rarr; {array}</span></h4>
+</dt>
+<dd>
+<div class="description">
+<p>A drop-in replacement for the <code>validate</code> method on a Backbone model.</p>
+<p>Usage:</p>
+<pre><code class="lang-javascript">var MyModel = Backbone.Model.extend({});
+MyModel.prototype.validate = require('backbone.validate');</code></pre>
+</div>
+<h5>Parameters:</h5>
+<table class="params">
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th class="last">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="name"><code>attributes</code></td>
+<td class="type">
+<span class="param-type">object</span>
+</td>
+<td class="description last"><p>the attributes being set</p></td>
+</tr>
+<tr>
+<td class="name"><code>options</code></td>
+<td class="type">
+<span class="param-type">object</span>
+</td>
+<td class="description last"><p>the options hash</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="details">
+<dt class="tag-source">Source:</dt>
+<dd class="tag-source"><ul class="dummy">
+<li>
+<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js">backbone.validator.js</a>
+<span>, </span>
+<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js#L112">lineno 112</a>
+</li>
+</ul></dd>
+</dl>
+<h5>Returns:</h5>
+<div class="param-desc">
+<p>array of error objects, if any.</p>
+</div>
+<dl>
+<dt>
+Type
+</dt>
+<dd>
+<span class="param-type">array</span>
+</dd>
+</dl>
+</dd>
+</dl>
+</article>
+</section>
+</div>
 
-### Extending the pre-defined validators
-
-The pre-defined validators list may be added to by extending the Backbone.Validator.testers object.
-
-```javascript
-_.extend(Backbone.Validator.testers, {
-    no_hotdogs_without_mustard: function(value, mustard, attribute){
-        if(value.indexOf('hotdogs') > -1 && mustard === false){
-            return format('{0} MAY NOT BE A HOTDOG WITHOUT MUSTARD!', attribute);
-        }
-    }
-});
-```
-
-`is_type` allows for checking of `date` objects now.
-
-### List of pre-defined validators
-
-```javascript
-// does the value exist within a given range, inclusive
-range: function(value, range, attribute){
-    if(_.isArray(range) && range.length === 2){
-        if((value <= range[0]) || (value >= range[1])){
-            return format('{0} is not within the range {1} - {2} for {3}', value, range[0], range[1], attribute)
-        }
-    }
-},
-
-// if type is date we'll do something different.
-// also, (Underscore: add `_.isValidDate`)[https://github.com/documentcloud/underscore/pull/489] means we're not going to use _.isDate
-// and since this is generic we can't use our forked version
-is_type: function(value, type, attribute){
-    if(type === 'date'){
-        if(_.isNaN(value.valueOf()) || toString.call(value) != '[object Date]'){
-            return format("Expected {0} to be a valid date for {1}", value, attribute);
-        }
-    } else {
-        if(typeof(value) !== type){
-            return format("Expected {0} to be of type {1} for {2} ", value, type, attribute);
-        }
-        
-    }            
-},
-
-// Does it pass a regular expression test
-regex: function(value, re, attribute){
-    var regex = new RegExp(re);
-    if(regex.test(value)){
-        return format("{0} did not match pattern {1} for {2}", value, regex.toString(), attribute);
-    }
-},
-
-// is it present in a given list
-in_list: function(value, list, attribute){
-    if(_.isArray(list) && list.indexOf(value) === -1){
-        return format("{0} is not part of [{1}] for {2}", value, list.join(', '), attribute);
-    }
-},
-
-// is a key of an object
-is_key: function(value, obj, attribute){
-    if(_.has(obj, value)){
-        return format("{0} is not one of [{1}] for {2}", value, _(obj).keys().join(', '), attribute);
-    }
-},
-
-// does the value come in under a max?
-max_length: function(value, length, attribute){
-    if(!_.isNull(value) && !_.isUndefined(value) && _.has(value, "length") && !_.isUndefined(value.length) && (value.length > length)){
-        return format("{0} is longer than {1} for {2} ", value, length, attribute);
-    }
-},
-
-// does the value meet a minimum requirement
-min_length: function(value, length, attribute){
-    if(!_.isNull(value) && !_.isUndefined(value) && _.has(value, "length") && !_.isUndefined(value.length) && (value.length < length)){
-        return format('{0} is shorter than {1} for {2}', value, length, attribute);
-    }
-},
-
-// are they the same
-to_equal: function(value, example, attribute){
-    if(!_.isEqual(value, example)){
-        return format("{0} is not the same as {1} for {2}", value, example, attribute);
-    }
-},
-
-// unbounded top 
-min_value: function(value, limit, attribute){
-    if(value < limit){
-        return format("{0} is smaller than {1} for {2}", value, limit, attribute);
-    }
-},
-
-// unbounded bottom
-max_value: function(value, limit, attribute){
-    if(value > limit){
-        return format("{0} exceeds {1} for {2}", value, limit, attribute);
-    }
-}
-
-// is an instance of an object
-is_instance: function(value, type){
-    if(!(value instanceof type)){
-        return format("{0} is not an instance of {1}", value, type);
-    }
-}
-```
+*generated with [docme](https://github.com/thlorenz/docme)*
+<!-- END docme generated API please keep comment here to allow auto update -->
 
 ## Inspiration
 
