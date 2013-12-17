@@ -643,10 +643,10 @@ The inspiration for this comes directly (along with the `format` function) from 
 
 
 ## Copyright
-Backbone.Validator is copyright (c) 2012 Broadcastr.
+Backbone.Validator is copyright (c) 2012-2014 Todd Kennedy
 
 ## License
-Copyright (C) 2012 Broadcastr
+Copyright (C) 2012-2014 Todd Kennedy
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
