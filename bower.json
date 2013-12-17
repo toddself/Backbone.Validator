@@ -1,0 +1,29 @@
+{
+  "name": "backbone.validator",
+  "main": "Backbone.Validator.js",
+  "version": "1.1.1",
+  "homepage": "https://github.com/toddself/Backbone.Validator",
+  "authors": [
+    "Todd Kennedy <todd@selfassembled.org>"
+  ],
+  "description": "A validation plugin for Backbone models",
+  "keywords": [
+    "backbone",
+    "validation",
+    "models",
+    "validator",
+    "validate",
+    "underscore"
+  ],
+  "dependencies": {
+    "backbone": "~1.1.0"
+  },
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
