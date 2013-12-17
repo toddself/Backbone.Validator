@@ -1,36 +1,52 @@
 {
-  "name": "backbonevalidator",
-  "version": "1.0.0",
-  "description": "Validations plugin for Backbone",
-  "main": "Gruntfile.js",
-  "directories": {
-    "doc": "docs",
-    "test": "test"
+  "name": "Backbone.Validator",
+  "description": "Validation plugin for Backbone allowing for setting of default values",
+  "version": "0.0.0",
+  "repository": {
+    "url": "git://github.com/toddself/Backbone.Validator.git"
+  },
+  "main": "Backbone.Validator.js",
+  "scripts": {
+    "postinstall": "if [[ -d .git ]]; then cp pre-commit.sh .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit; fi",
+    "pre-commit": "npm run lint && npm test",
+    "lint": "jshint",
+    "test": "if [[ -d test ]]; then tape test/*js; else tape *test.js; fi"
+  },
+  "dependencies": {
+    "es5-shim": "~2.1.0",
+    "backbone": "~1.1.0"
   },
   "devDependencies": {
-    "chai": "~1.6.1",
-    "grunt": "~0.4.1",
-    "grunt-contrib-jshint": "~0.4.3",
-    "grunt-jsvalidate": "~0.2.1",
-    "grunt-mocha": "~0.3.4",
-    "grunt-cli": "~0.1.9"
+    "jshint": "~2.3.0",
+    "tape": "~2.3.0"
   },
-  "dependencies": {},
-  "scripts": {
-    "test": "./node_modules/.bin/grunt test"
+  "author": {
+    "name": "Todd Kennedy",
+    "email": "<todd@selfassembled.org>",
+    "url": "http://tck.io"
   },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/toddself/Backbone.Validator"
+  "keywords": [],
+  "license": {
+    "type": "MIT",
+    "url": "https://github.com/toddself/Backbone.Validator/blog/master/LICENSE"
   },
-  "keywords": [
-    "backbone",
-    "validation",
-    "models"
-  ],
-  "author": "Todd Kennedy",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/toddself/Backbone.Validator/issues"
+  "engine": {
+    "node": ">=0.8"
+  },
+  "testling": {
+    "files": "test/*.js",
+    "browsers": [
+      "ie/8..latest",
+      "firefox/17..latest",
+      "firefox/nightly",
+      "chrome/22..latest",
+      "chrome/canary",
+      "opera/12..latest",
+      "opera/next",
+      "safari/5.1..latest",
+      "ipad/6.0..latest",
+      "iphone/6.0..latest",
+      "android-browser/4.2..latest"
+    ]
   }
 }

@@ -1,7 +1,7 @@
 // Backbone.Validator
 //
-// Copyright (C) 2012, 2013 Broadcastr
-// Author: Todd Kennedy <todd.kennedy@gmail.com>
+// Copyright (C) 2012-2014 Todd Kennedy
+// // Author: Todd Kennedy <todd.kennedy@gmail.com>
 // Distributed under MIT License
 //
 // Documentation and full license available at:
@@ -10,256 +10,326 @@
 (function(){
     'use strict';
 
-    var global = this;
+    /**
+     * Backbone.Model.changedAttributes() is obnoxious since if you're setting
+     * a value that doesn't exist on a model it doesn't show that as a "changed"
+     * attribute so we'll need to compute this ourselves
+     * @method  getChangedAttributes
+     * @private
+     * @param {object} model the model
+     * @param {object} attributes the list of changed attributes for the model
+     * @returns {object} a hash of all the changed attributes on the model
+     */
+    function getChangedAttributes(model, attributes){
+        var changed = model.changedAttributes() || {};
 
-    // We need both of these libraries
-    var Backbone = global.Backbone;
-    if(!Backbone && (typeof require !== 'undefined')){
-        Backbone = require('backbone');
-    }
-    if(!_ && (typeof require !== 'undefined')){
-        _ = require('underscore');
+        Object.keys(attributes).forEach(function(attr){
+            if(!model._previousAttributes[attr] && !changed[attr]){
+                changed[attr] = attributes[attr];
+            }
+        });
+        return changed;
     }
 
     /**
-     * Returns an array of the validator functions for the given attributes
-     * @method get_validators
+     * Generates an array of validator objects for an attribute
+     * from the validators hash map attached to the model objects
+     * @method  getValidators
      * @private
-     * @param  {Object} model The model object
-     * @param  {String} attr  The attribute to get the validators for
-     * @return {Array}        An array of functions
+     * @param   {object} model The model
+     * @param   {string} attr The attribute to test
+     * @returns {array} An array of validator objects
      */
-    var get_validators = function(model, attr){
+    function getValidators(model, attr){
         var validators = [];
-
-        _.each(model.validators[attr], function(val, key){
-            var validator;
+        Object.keys(model.validators[attr]).forEach(function(key){
+            var validator = model.validators[attr][key];
             if(key === 'fn'){
-                validators.push({fn: model.validators[attr].fn, arg: null});
+                validators.push({
+                    fn: validator,
+                    arg: null,
+                    attr: key
+                });
             } else {
-                if(key in Backbone.Validator.testers){
-                    validators.push({fn: Backbone.Validator.testers[key],
-                                     arg: model.validators[attr][key]});
+                if(typeof Testers[key] === 'function'){
+                    validators.push({
+                        fn: Testers[key],
+                        arg: validator,
+                        attr: key
+                    });
                 }
             }
-
         });
         return validators;
-    };
+    }
 
     /**
-     * Runs the list of validators on the data to verify it can be set
-     *
-     * @method run_validators
+     * Runs the validators on the attributes and generates an error object
+     * for each validator that fails
+     * @method  runValidators
      * @private
-     * @param  {Mixed} value      The value you're trying to set
-     * @param  {Array} validators The validators for the attribute
-     * @param  {String} attribute  The name of the attributes
-     * @return {Array}            A list of all the errors returned from the validators
+     * @param   {mixed} value The value to set the attribute to
+     * @param   {array} validators The array of validators from `getValidators`
+     * @param   {string} attribute The name of the attribute to be set
+     * @returns {array} An array of error objects
      */
-    var run_validators = function(value, validators, attribute){
-        // call each validator in the order in which it was attached to the attribute
-        // should an error be returned, we'll capture it and store it
+    function runValidators(value, attribute, validators){
         var errors = [];
-        _.each(validators, function(validator){
+        validators.forEach(function(validator){
             var result = validator.fn.call(this, value, validator.arg, attribute);
             if(result){
-                errors.push(result);
+                errors.push({attr: validator.attr, error: result});
             }
         });
         return errors;
-    };
+    }
 
     /**
-     * Sets the attribute to a given default if the validation failed on setting
-     * the new value for the attribute
-     *
-     * @method  set_default
+     * Reduces the errors object and sets the attributes that failed validation
+     * to the defaults provided.
+     * @method setDefaults
      * @private
-     * @param {Object} model    The model you wish to set the default on
-     * @param {String} attr     The key you wish to set
-     * @param {Object} errors   An object containing all the current errors so a
-     *                          error can still be triggered to let you know
-     *                          the default was set
-     * @param {Array} model_validators The object containing all the validators for
-     *                                      the given attribute
-     * @return {Object} The errors object returned
+     * @param  {object} model The model
+     * @param  {array} errors The errors as returned from `runValidators`
+     * @return {array} the array of errors
      */
-    var set_default = function(model, attr, errors, model_validators){
-        if(model.defaults && (attr in model.defaults)){
-            var default_errors = run_validators(model.defaults[attr], model_validators, attr);
-            if(default_errors.length < 1){
+    function setDefaults(model, errors){
+        // we need to produce a unique array of attrs, so we'll reduce into
+        // an object with the attr set as the key, and then just get the keys
+        // from that object
+        var failingAttrs = Object.keys(errors.reduce(function(acc, error){
+            acc[error.attr] = true;
+            return acc;
+        }, {}));
+
+        failingAttrs.forEach(function(attr){
+            if(model.defaults && model.defaults[attr]){
                 model.attributes[attr] = model.defaults[attr];
-            } else {
-                errors = errors.concat(default_errors);
             }
+        });
+    }
+
+    /**
+     * A drop-in replacement for the `validate` method on a Backbone model.
+     *
+     * Usage:
+     *
+     * ```javascript
+     * var MyModel = Backbone.Model.extend({});
+     * MyModel.prototype.validate = require('backbone.validate');
+     * ```
+     *
+     * @method Validate
+     * @param  {object} attributes the attributes being set
+     * @param  {object} options the options hash
+     * @return {array} array of error objects, if any.
+     */
+    function Validate(attributes, options) {
+        var errors = [];
+        var fail = false;
+        var model = this;
+        var changedAttributes = getChangedAttributes(model, attributes);
+
+        if(model.validators){
+            Object.keys(changedAttributes).forEach(function(attr){
+                var validators = getValidators(model, attr);
+                var value = changedAttributes[attr];
+                var attrErrors = runValidators(value, attr, validators);
+                errors = errors.concat(attrErrors);
+            });
         }
-        model.trigger('error', model, errors);
-        return errors;
-    };
 
-    var Validator = {
-        use_defaults: false,
-
-        /**
-         * Implementation of Backbone.Model.validate signature
-         * @param  {Object} new_attributes The attributes given to `.set`
-         * @param  {Object} options        Any options passed into `.set`
-         * @return {Mixed}                 `undefined` if everything is kosher
-         *                                 `array` of `string`s if not
-         */
-        validate: function(new_attributes, options) {
-            var errors = {};
-            var fail = false;
-            var model = this;
-
-            var changedAttributes = model.changedAttributes();
-
-            if(model.validators){
-                _.each(changedAttributes, function(attr){
-                    if(model.validators[attr]){
-                        var model_validators = get_validators(model, attr);
-
-                        var attr_errors = run_validators(new_attributes[attr],
-                                                         model_validators,
-                                                         attr);
-
-                        if(attr_errors.length){
-                            errors[attr] = attr_errors;
-                            fail = true;
-                            if(model.use_defaults || options.use_defaults){
-                                set_default(model, attr, errors, model_validators);
-                            }
-                        }
-                    }
-                });
-                if(fail){
-                    return errors;
-                }
+        if(errors.length){
+            if(model.useDefaults || options.useDefaults){
+                setDefaults(model, errors);
             }
+            return errors;
         }
-    };
-
+    }
 
     /**
      * Formats a string for easier display.
      * borrowed from https://github.com/thedersen/backbone.validation
      * @method format
      * @private
-     * @return {String} The composited string
+     * @return {string} The composited string
      */
     var format = function() {
         var args = Array.prototype.slice.call(arguments);
         var text = args.shift();
         return text.replace(/\{(\d+)\}/g, function(match, number) {
-            return typeof !_.isUndefined(args[number]) ? args[number] : match;
+            return args[number] ? args[number] : match;
         });
     };
 
     var Testers =  {
-        // is the value in a given range
+        /**
+         * Tests if a value is within a given range. Range must be an array
+         * @method  range
+         * @memberOf Testers
+         * @param   {number} value value to be tested
+         * @param   {array} range acceptable range
+         * @param   {string} attribute name of model attribute
+         * @returns {string} error message, if any
+         */
         range: function(value, range, attribute){
-            if(_.isArray(range) && range.length === 2){
-                if(!_.isNumber(value) || (value < range[0]) || (value > range[1])){
+            if(Array.isArray(range) && range.length === 2 && typeof value === 'number'){
+                if(value < range[0] || value > range[1]){
                     return format('{0} is not within the range {1} - {2} for {3}', value, range[0], range[1], attribute);
                 }
             }
         },
 
-        // if type is date we'll do something different.
-        // also, (Since `_.isDate` returns true for invalid dates)[https://github.com/documentcloud/underscore/pull/489] means we're not going to use _.isDate
-        is_type: function(value, type, attribute){
+        /**
+         * Tests if a value is of the required type. Checks to make sure dates
+         * are both instances of the date object & valid dates
+         * @method  isType
+         * @memberOf Testers
+         * @param   {mixed} value The value to be tested
+         * @param   {string} type the type you want the value to be
+         * @param   {string} attribute the name of the model attribute
+         * @returns {string} error message, if any
+         */
+        isType: function(value, type, attribute){
             if(type === 'date'){
-                if(_.isNaN(value.valueOf()) || Object.prototype.toString.call(value) !== '[object Date]'){
-                    return format("Expected {0} to be a valid date for {1}", value, attribute);
+                if(isNaN(value.valueOf()) || Object.prototype.toString.call(value) !== '[object Date]'){
+                    return format('Expected {0} to be a valid date for {1}', value, attribute);
                 }
             } else {
-                if(typeof(value) !== type){
-                    return format("Expected {0} to be of type {1} for {2} ", value, type, attribute);
+                if(typeof value !== type){
+                    return format('Expected {0} to be of type {1} for {2} ', value, type, attribute);
                 }
 
             }
         },
 
-        // does it match the given regex
+        /**
+         * Tests if a value conforms to a regex
+         * @method  regex
+         * @memberOf Testers
+         * @param   {string} value the value to be tested
+         * @param   {regex} re the regular expression
+         * @param   {string} attribute the name of the model attribute
+         * @returns {string} error message, if any
+         */
         regex: function(value, re, attribute){
             var regex = new RegExp(re);
             if(!regex.test(value)){
-                return format("{0} did not match pattern {1} for {2}", value, regex.toString(), attribute);
+                return format('{0} did not match pattern {1} for {2}', value, regex.toString(), attribute);
             }
         },
 
-        // is the value in this list
-        in_list: function(value, list, attribute){
-            if(_.isArray(list) && _.indexOf(list, value) === -1){
-                return format("{0} is not part of [{1}] for {2}", value, list.join(', '), attribute);
+        /**
+         * Tests if a value is a member of a given array
+         * @method  inList
+         * @param   {mixed} value value to test
+         * @param   {array} list the list of acceptable values
+         * @param   {string} attribute the name of the model attribute
+         * @returns {string} error message, if any
+         */
+        inList: function(value, list, attribute){
+            if(Array.isArray(list) && list.indexOf(value) === -1){
+                return format('{0} is not part of [{1}] for {2}', value, list.join(', '), attribute);
             }
         },
 
-        // is the value a key
-        is_key: function(value, obj, attribute){
-            if(_.has(obj, value)){
-                return format("{0} is not one of [{1}] for {2}", value, _(obj).keys().join(', '), attribute);
+        /**
+         * Tests to see if the value is the key on an object
+         * @method  isKey
+         * @param   {string} value the value to test
+         * @param   {object} obj the object to test for keys
+         * @param   {string} attribute the name of the model attribute
+         * @returns {string} error message, if any
+         */
+        isKey: function(value, obj, attribute){
+            if(!obj[value]){
+                return format('{0} is not one of [{1}] for {2}', value, Object.keys(obj).join(', '), attribute);
             }
         },
 
-        // does the value come in under a max?
-        max_length: function(value, length, attribute){
-            if(!_.isNull(value) && !_.isUndefined(value)){
-                if((_.has(value, "length") && !_.isUndefined(value.length) && (value.length > length)) ||
-                   (_.isString(value) && (value.length > length))){
+        /**
+         * Tests to see if the value is under a max length
+         * @method  maxLength
+         * @param   {mixed} value the value to test: string or array
+         * @param   {number} length the maximum length for value
+         * @param   {string} attribute the name of the model attribute
+         * @returns {string} error message, if any
+         */
+        maxLength: function(value, length, attribute){
+            if(typeof value === 'string' || Array.isArray(value)){
+                if(value.length > length){
+                   return format('{0} is shorter than {1} for {2}', value, length, attribute);
+                }
+            }
+        },
+
+        /**
+         * Test to see if the value is over a min length
+         * @method  minLength
+         * @param   {mixed} value the value to test: string or array
+         * @param   {number} length the minumum value for length
+         * @param   {string} attribute the name of the model attribute
+         * @returns {string} error message, if any
+         */
+        minLength: function(value, length, attribute){
+            if(typeof value === 'string' || Array.isArray(value)){
+                if(value.length < length){
                     return format('{0} is shorter than {1} for {2}', value, length, attribute);
                 }
             }
         },
 
-        // does the value meet a minimum requirement
-        min_length: function(value, length, attribute){
-            if(!_.isNull(value) && !_.isUndefined(value)){
-                if((_.has(value, "length") && !_.isUndefined(value.length) && (value.length < length)) ||
-                   (_.isString(value) && (value.length < length))){
-                    return format('{0} is shorter than {1} for {2}', value, length, attribute);
-                }
+        /**
+         * Test to see if two values are shallow equal
+         * @method  toEqual
+         * @param   {mixed} value the value to test
+         * @param   {mixed} example the desired value
+         * @param   {string} attribute the name of the model attribute
+         * @returns {string} error message, if any
+         */
+        toEqual: function(value, example, attribute){
+            if(value !== example){
+                return format('{0} is not the same as {1} for {2}', value, example, attribute);
             }
         },
 
-        // does the value equal a default
-        to_equal: function(value, example, attribute){
-            if(!_.isEqual(value, example)){
-                return format("{0} is not the same as {1} for {2}", value, example, attribute);
+        /**
+         * Tests a number to make sure it's at least a specified value or higher
+         * @method  minValue
+         * @param   {number} value the number to test
+         * @param   {number} limit the minimum value
+         * @param   {string} attribute the name of the model attribute
+         * @returns {string} error message, if any
+         */
+        minValue: function(value, limit, attribute){
+            if(value <= limit){
+                return format('{0} is smaller than {1} for {2}', value, limit, attribute);
             }
         },
 
-        // is the value at least a number
-        min_value: function(value, limit, attribute){
-            if(value < limit){
-                return format("{0} is smaller than {1} for {2}", value, limit, attribute);
-            }
-        },
-
-        // does the value exceed a number
-        max_value: function(value, limit, attribute){
-            if(value > limit){
-                return format("{0} exceeds {1} for {2}", value, limit, attribute);
-            }
-        },
-
-        // is this an instance of a particular object
-        is_instance: function(value, type){
-            if(!(value instanceof type)){
-                return format("{0} is not an instance of {1}", value, type);
+        /**
+         * Test a number fo make sure it's lower than a specified value
+         * @method  maxValue
+         * @param   {number} value the number to test
+         * @param   {number} limit the maximum value for this number
+         * @param   {string} attribute the name of the model attribute
+         * @returns {string} error message, if any
+         */
+        maxValue: function(value, limit, attribute){
+            if(value >= limit){
+                return format('{0} exceeds {1} for {2}', value, limit, attribute);
             }
         }
     };
 
     if(typeof exports !== 'undefined'){
-        module.exports = Validator;
+        module.exports = Validate;
     } else if (typeof define === 'function' && define.amd ){
         define(function(){
-            return Validator;
+            return Validate;
         });
     } else {
-        global.BackboneValidator = Validator;
+        window.Backbone.Validator = Validate;
     }
 
-}).call(this);
+})();
