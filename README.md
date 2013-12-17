@@ -1,5 +1,7 @@
 # Backbone.Validator
-[![Build Status](https://travis-ci.org/toddself/Backbone.Validator.png?branch=update_backbone_1.0)](https://travis-ci.org/toddself/Backbone.Validator)
+[![Build Status](https://travis-ci.org/toddself/Backbone.Validator.png)](https://travis-ci.org/toddself/Backbone.Validator)
+[![browser support](https://ci.testling.com/toddself/Backbone.Validator.png)](https://ci.testling.com/toddself/Backbone.Validator)
+
 
 ## Versions
 * 1.1.0 - **breaking changes** General code clean up, allow for use via commonJS, requireJS, no module system, working with Backbone 1.0+, renamed methods and variables to camel case for JS consistancy.
