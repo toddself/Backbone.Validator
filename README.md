@@ -1,5 +1,6 @@
 # Backbone.Validator
 [![Build Status](https://travis-ci.org/toddself/Backbone.Validator.png)](https://travis-ci.org/toddself/Backbone.Validator)
+
 [![browser support](https://ci.testling.com/toddself/Backbone.Validator.png)](https://ci.testling.com/toddself/Backbone.Validator)
 
 
