@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/toddself/Backbone.Validator.png?branch=update_backbone_1.0)](https://travis-ci.org/toddself/Backbone.Validator)
 
 ## Versions
-* 1.1.0 - General code clean up, allow for use via commonJS, requireJS, no module system, working with Backbone 1.0+, renamed methods and variables to camel case for JS consistancy.
+* 1.1.0 - **breaking changes** General code clean up, allow for use via commonJS, requireJS, no module system, working with Backbone 1.0+, renamed methods and variables to camel case for JS consistancy.
 * 0.92.1 - Added `is_instance` pre-defined validator
 * 0.92.0 - Cleaned up the code a little, removed console.log statements, and changed `to_equal` to use `_.isEqual` for better comparison. Added comments for annotated source code, and started porting in tests from our internal codebase.  Matching latest Backbone version tested against.
 * 0.4.3 - IE doesn't support `Array.prototype.indexOf`, switched to `_.indexOf()`
