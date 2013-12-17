@@ -10,7 +10,7 @@
     "postinstall": "if [[ -d .git ]]; then cp pre-commit.sh .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit; fi",
     "pre-commit": "npm run lint && npm test",
     "lint": "jshint",
-    "test": "if [[ -d test ]]; then tape test/*js; else tape *test.js; fi"
+    "test": "tape test/*js"
   },
   "dependencies": {
     "es5-shim": "~2.1.0",
