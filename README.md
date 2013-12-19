@@ -173,9 +173,9 @@ test_model.get('title');
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js">backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js">backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js#L222">lineno 222</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js#L222">lineno 222</a>
 </li>
 </ul></dd>
 </dl>
@@ -236,9 +236,9 @@ Type
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js">backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js">backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js#L236">lineno 236</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js#L236">lineno 236</a>
 </li>
 </ul></dd>
 </dl>
@@ -299,9 +299,9 @@ Type
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js">backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js">backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js#L250">lineno 250</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js#L250">lineno 250</a>
 </li>
 </ul></dd>
 </dl>
@@ -362,9 +362,9 @@ Type
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js">backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js">backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js#L310">lineno 310</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js#L310">lineno 310</a>
 </li>
 </ul></dd>
 </dl>
@@ -425,9 +425,9 @@ Type
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js">backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js">backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js#L266">lineno 266</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js#L266">lineno 266</a>
 </li>
 </ul></dd>
 </dl>
@@ -488,9 +488,9 @@ Type
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js">backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js">backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js#L296">lineno 296</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js#L296">lineno 296</a>
 </li>
 </ul></dd>
 </dl>
@@ -551,9 +551,9 @@ Type
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js">backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js">backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js#L282">lineno 282</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js#L282">lineno 282</a>
 </li>
 </ul></dd>
 </dl>
@@ -610,9 +610,9 @@ MyModel.prototype.validate = require('backbone.validate');</code></pre>
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js">backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js">backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/update_backbone_1.0/backbone.validator.js#L112">lineno 112</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js#L112">lineno 112</a>
 </li>
 </ul></dd>
 </dl>
