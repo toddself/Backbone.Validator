@@ -1,7 +1,6 @@
 'use strict';
 
 var test = require('tape').test;
-var assert = require('assert');
 var Backbone = require('backbone');
 var validate = require('../backbone.validator');
 

@@ -17,8 +17,6 @@
   "strict": true,
   "unused": false,
   "predef": [
-    "define",
-    "_",
-    "Backbone"
+    "define"
   ]
 }
