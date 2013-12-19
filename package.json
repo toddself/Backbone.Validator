@@ -9,6 +9,7 @@
   "scripts": {
     "postinstall": "if [[ -d .git ]]; then cp pre-commit.sh .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit; fi",
     "pre-commit": "npm run lint && npm test",
+    "prepublish": "docme README.md",
     "lint": "jshint",
     "test": "tape test/*js"
   },
@@ -17,7 +18,8 @@
   },
   "devDependencies": {
     "jshint": "~2.3.0",
-    "tape": "~2.3.0"
+    "tape": "~2.3.0",
+    "docme": "~0.1.4"
   },
   "author": {
     "name": "Todd Kennedy",
