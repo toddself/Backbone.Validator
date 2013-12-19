@@ -41,24 +41,27 @@
      */
     function getValidators(model, attr){
         var validators = [];
-        Object.keys(model.validators[attr]).forEach(function(key){
-            var validator = model.validators[attr][key];
-            if(key === 'fn'){
-                validators.push({
-                    fn: validator,
-                    arg: null,
-                    attr: key
-                });
-            } else {
-                if(typeof Testers[key] === 'function'){
+
+        if(model.validators[attr]){
+            Object.keys(model.validators[attr]).forEach(function(key){
+                var validator = model.validators[attr][key];
+                if(key === 'fn'){
                     validators.push({
-                        fn: Testers[key],
-                        arg: validator,
+                        fn: validator,
+                        arg: null,
                         attr: key
                     });
+                } else {
+                    if(typeof Testers[key] === 'function'){
+                        validators.push({
+                            fn: Testers[key],
+                            arg: validator,
+                            attr: key
+                        });
+                    }
                 }
-            }
-        });
+            });
+        }
         return validators;
     }
 
