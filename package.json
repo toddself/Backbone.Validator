@@ -1,7 +1,7 @@
 {
   "name": "backbone.validator",
   "description": "Validation plugin for Backbone allowing for setting of default values",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "repository": {
     "url": "git://github.com/toddself/Backbone.Validator.git"
   },
