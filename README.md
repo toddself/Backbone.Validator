@@ -194,7 +194,7 @@ If you have some complex set of validation rules that would normally not permit 
 <li>
 <a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L224">lineno 224</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L227">lineno 227</a>
 </li>
 </ul></dd>
 </dl>
@@ -257,7 +257,7 @@ Type
 <li>
 <a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L238">lineno 238</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L241">lineno 241</a>
 </li>
 </ul></dd>
 </dl>
@@ -320,7 +320,7 @@ Type
 <li>
 <a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L252">lineno 252</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L255">lineno 255</a>
 </li>
 </ul></dd>
 </dl>
@@ -383,7 +383,7 @@ Type
 <li>
 <a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L312">lineno 312</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L315">lineno 315</a>
 </li>
 </ul></dd>
 </dl>
@@ -446,7 +446,7 @@ Type
 <li>
 <a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L268">lineno 268</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L271">lineno 271</a>
 </li>
 </ul></dd>
 </dl>
@@ -509,7 +509,7 @@ Type
 <li>
 <a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L298">lineno 298</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L301">lineno 301</a>
 </li>
 </ul></dd>
 </dl>
@@ -572,7 +572,7 @@ Type
 <li>
 <a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L284">lineno 284</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L287">lineno 287</a>
 </li>
 </ul></dd>
 </dl>
@@ -631,7 +631,7 @@ MyModel.prototype.validate = require('backbone.validate');</code></pre>
 <li>
 <a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L114">lineno 114</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L117">lineno 117</a>
 </li>
 </ul></dd>
 </dl>
