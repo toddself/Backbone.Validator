@@ -4,6 +4,7 @@
 [![browser support](https://ci.testling.com/toddself/Backbone.Validator.png)](https://ci.testling.com/toddself/Backbone.Validator)
 
 ## Versions
+* 1.1.5 - Added `emptyOk` to allow fields that would normally require more complex checking (i.e. a regex) to accept empty strings.
 * 1.1.0 - **breaking changes** General code clean up, allow for use via commonJS, requireJS, no module system, working with Backbone 1.0+, renamed methods and variables to camel case for JS consistancy.
 * 0.92.1 - Added `is_instance` pre-defined validator
 * 0.92.0 - Cleaned up the code a little, removed console.log statements, and changed `to_equal` to use `_.isEqual` for better comparison. Added comments for annotated source code, and started porting in tests from our internal codebase.  Matching latest Backbone version tested against.
@@ -22,19 +23,19 @@ Override the `prototype.validate` for your created model with the package.
 
 ```javascript
 var PrimateModel = Backbone.Model.extend({
-    useDefaults: true,
-    defaults: {
-        type: "Gorilla",
-        name: "Magilla"
+  useDefaults: true,
+  defaults: {
+    type: "Gorilla",
+    name: "Magilla"
+  },
+  validators: {
+    type: {
+      inList: ['Gorilla', 'Human', 'Monkey']
     },
-    validators: {
-        type: {
-            inList: ['Gorilla', 'Human', 'Monkey']
-        },
-        name: {
-            isType: 'string'
-        }
+    name: {
+      isType: 'string'
     }
+  }
 });
 
 PrimateModel.prototype.validate = require('backbone.validator');
@@ -44,29 +45,43 @@ If you want the system to substitute your defaults, set `useDefaults` on your mo
 
 **Remember:** if you want to validate on `set`, you need to also include `{validate: true}`
 
+
 ## Defining Validators
 Validators are defined in the `validator` object as part of the model setup.  If the value passed in doesn't meet your criteria for a valid value, return any value.  If it does match your criteria, return nothing (`undefined`).  You may attach multiple validators to each attribute -- they will be run in the order in which they are attached.  If one of them fails, the entire validation will fail and `error` will be triggered.
 
 ```javascript
 var TestModel = Backbone.Model.extend({
-   validators: {
-       title: {
-           fn: function(value){
-               if(typeof(value) !== 'string'){
-                   return "The title has to be a valid string";
-               }
-           }
-       }
-   }
+  validators: {
+    title: {
+      fn: function(value){
+        if(typeof(value) !== 'string'){
+          return "The title has to be a valid string";
+        }
+      },
+    },
+    email: {
+      regex: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}$/i,
+      emptyOk: true
+    }
+  }
 });
 
 var test_model = new TestModel();
-test_model.set({title: "I am a title!"});
+test_model.set({title: "I am a title!"}, {validate: true});
 test_model.get('title');
 "I am a title!"
-test_model.set({title: false});
+test_model.set({title: false}, {validate: true});
 test_model.get('title');
 "I am a title!"
+test_model.set({email: 'todd@selfassembled.org'}, {validate: true});
+test_model.get('email');
+"todd@selfassembled.org"
+test_model.set({email: ''}, {validate: true});
+test_model.get('email');
+""
+test_model.set({email: 'hjkdhf'}, {validate: true});
+test_model.get('email');
+""
 ```
 
 
@@ -75,14 +90,14 @@ You can catch errors and do something with them by attaching a listener to the `
 
 ```javascript
 TestModel.extend({
-    initialize: function(){
-        this.on('invalid', this.displayError);
-    },
-    displayError: function(errors){
-        errors.forEach(function(error){
-            console.log(errors.attr, errors.error);
-        });
-    }
+  initialize: function(){
+    this.on('invalid', this.displayError);
+  },
+  displayError: function(errors){
+    errors.forEach(function(error){
+      console.log(errors.attr, errors.error);
+    });
+  }
 });
 
 var test_model = new TestModel();
@@ -100,10 +115,10 @@ You can have the validation framework substitute a reasonable default for an inv
 
 ```javascript
 TestModel.extend({
-    useDefaults: true,
-    defaults: {
-        title: "BAD TITLE"
-    }
+  useDefaults: true,
+  defaults: {
+    title: "BAD TITLE"
+  }
 });
 
 var test_model = new TestModel();
@@ -116,11 +131,15 @@ test_model.get('title');
 "BAD TITLE"
 ```
 
+## Empty fields with complex validation
+If you have some complex set of validation rules that would normally not permit empty values, you can set `emptyOk` on the field. This will allow you to set the field to an empty string and still have it pass validation rules. This will bypass **ALL** validators for a given field, so use this with care!
+
 ## Built-in tests
 
 <!-- START docme generated API please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN docme TO UPDATE -->
 
+<div>
 <div class="jsdoc-githubify">
 <section>
 <article>
@@ -173,9 +192,9 @@ test_model.get('title');
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js">backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js#L222">lineno 222</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L224">lineno 224</a>
 </li>
 </ul></dd>
 </dl>
@@ -236,9 +255,9 @@ Type
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js">backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js#L236">lineno 236</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L238">lineno 238</a>
 </li>
 </ul></dd>
 </dl>
@@ -299,9 +318,9 @@ Type
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js">backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js#L250">lineno 250</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L252">lineno 252</a>
 </li>
 </ul></dd>
 </dl>
@@ -362,9 +381,9 @@ Type
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js">backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js#L310">lineno 310</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L312">lineno 312</a>
 </li>
 </ul></dd>
 </dl>
@@ -425,9 +444,9 @@ Type
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js">backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js#L266">lineno 266</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L268">lineno 268</a>
 </li>
 </ul></dd>
 </dl>
@@ -488,9 +507,9 @@ Type
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js">backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js#L296">lineno 296</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L298">lineno 298</a>
 </li>
 </ul></dd>
 </dl>
@@ -551,9 +570,9 @@ Type
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js">backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js#L282">lineno 282</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L284">lineno 284</a>
 </li>
 </ul></dd>
 </dl>
@@ -610,9 +629,9 @@ MyModel.prototype.validate = require('backbone.validate');</code></pre>
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js">backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master/backbone.validator.js#L112">lineno 112</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L114">lineno 114</a>
 </li>
 </ul></dd>
 </dl>
@@ -635,6 +654,7 @@ Type
 </div>
 
 *generated with [docme](https://github.com/thlorenz/docme)*
+</div>
 <!-- END docme generated API please keep comment here to allow auto update -->
 
 ## Inspiration

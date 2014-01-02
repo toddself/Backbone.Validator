@@ -28,3 +28,23 @@ test('Should handle a missing validator', function(t){
   t.end();
 
 });
+
+
+test('Allow for empty values', function(t){
+  var TM = Backbone.Model.extend({
+    defaults: {
+      email: ''
+    },
+    validators: {
+      email: {
+        regex: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}$/i,
+        emptyOk: true
+      }
+    }
+  });
+
+  var to = new TM();
+  to.set({'email': ''}, {validate: true});
+  t.equal(to.get('email'), '', 'sholud be OK to be empty');
+  t.end();
+});
