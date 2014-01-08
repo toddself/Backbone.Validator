@@ -7,16 +7,14 @@
   },
   "main": "Backbone.Validator.js",
   "scripts": {
-    "postinstall": "if [[ -d .git ]]; then cp pre-commit.sh .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit; fi",
+    "postinstall": "node post-install",
     "pre-commit": "npm run lint && npm test",
     "prepublish": "docme README.md",
     "lint": "jshint",
     "test": "tape test/*js"
   },
-  "dependencies": {
-    "backbone": "~1.1.0"
-  },
   "devDependencies": {
+    "backbone": "~1.1.0",
     "jshint": "~2.3.0",
     "tape": "~2.3.0",
     "docme": "~0.1.4"

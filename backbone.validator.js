@@ -21,9 +21,10 @@
    */
   function getChangedAttributes(model, attributes){
     var changed = model.changedAttributes() || {};
+    var prevAttr = model._previousAttributes;
 
     Object.keys(attributes).forEach(function(attr){
-      if(!model._previousAttributes[attr] && !changed[attr]){
+      if((prevAttr && !prevAttr[attr]) && !changed[attr]){
         changed[attr] = attributes[attr];
       }
     });
