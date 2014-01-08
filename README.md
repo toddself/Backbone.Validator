@@ -192,9 +192,9 @@ If you have some complex set of validation rules that would normally not permit 
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/preventing_foreach//Users/todd/src/Backbone.Validator/backbone.validator.js">/Users/todd/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L227">lineno 227</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/preventing_foreach//Users/todd/src/Backbone.Validator/backbone.validator.js#L228">lineno 228</a>
 </li>
 </ul></dd>
 </dl>
@@ -255,9 +255,9 @@ Type
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/preventing_foreach//Users/todd/src/Backbone.Validator/backbone.validator.js">/Users/todd/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L241">lineno 241</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/preventing_foreach//Users/todd/src/Backbone.Validator/backbone.validator.js#L242">lineno 242</a>
 </li>
 </ul></dd>
 </dl>
@@ -318,9 +318,9 @@ Type
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/preventing_foreach//Users/todd/src/Backbone.Validator/backbone.validator.js">/Users/todd/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L255">lineno 255</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/preventing_foreach//Users/todd/src/Backbone.Validator/backbone.validator.js#L256">lineno 256</a>
 </li>
 </ul></dd>
 </dl>
@@ -381,9 +381,9 @@ Type
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/preventing_foreach//Users/todd/src/Backbone.Validator/backbone.validator.js">/Users/todd/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L315">lineno 315</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/preventing_foreach//Users/todd/src/Backbone.Validator/backbone.validator.js#L316">lineno 316</a>
 </li>
 </ul></dd>
 </dl>
@@ -444,9 +444,9 @@ Type
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/preventing_foreach//Users/todd/src/Backbone.Validator/backbone.validator.js">/Users/todd/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L271">lineno 271</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/preventing_foreach//Users/todd/src/Backbone.Validator/backbone.validator.js#L272">lineno 272</a>
 </li>
 </ul></dd>
 </dl>
@@ -507,9 +507,9 @@ Type
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/preventing_foreach//Users/todd/src/Backbone.Validator/backbone.validator.js">/Users/todd/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L301">lineno 301</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/preventing_foreach//Users/todd/src/Backbone.Validator/backbone.validator.js#L302">lineno 302</a>
 </li>
 </ul></dd>
 </dl>
@@ -570,9 +570,9 @@ Type
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/preventing_foreach//Users/todd/src/Backbone.Validator/backbone.validator.js">/Users/todd/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L287">lineno 287</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/preventing_foreach//Users/todd/src/Backbone.Validator/backbone.validator.js#L288">lineno 288</a>
 </li>
 </ul></dd>
 </dl>
@@ -629,9 +629,9 @@ MyModel.prototype.validate = require('backbone.validate');</code></pre>
 <dt class="tag-source">Source:</dt>
 <dd class="tag-source"><ul class="dummy">
 <li>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js">/Users/tkenned2/src/Backbone.Validator/backbone.validator.js</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/preventing_foreach//Users/todd/src/Backbone.Validator/backbone.validator.js">/Users/todd/src/Backbone.Validator/backbone.validator.js</a>
 <span>, </span>
-<a href="https://github.com/toddself/Backbone.Validator/blob/master//Users/tkenned2/src/Backbone.Validator/backbone.validator.js#L117">lineno 117</a>
+<a href="https://github.com/toddself/Backbone.Validator/blob/preventing_foreach//Users/todd/src/Backbone.Validator/backbone.validator.js#L118">lineno 118</a>
 </li>
 </ul></dd>
 </dl>
